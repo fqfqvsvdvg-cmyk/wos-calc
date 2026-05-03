@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -13,28 +13,24 @@ h1{text-align:center;font-size:22px;margin-bottom:16px;}
 .title{font-size:18px;font-weight:bold;margin-bottom:8px;}
 .row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
 .line{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-
 input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 .name{flex:1;}
 .sec{width:70px;text-align:center;}
 .timeMin{width:80px;text-align:center;}
-
 .btn{padding:6px 8px;border-radius:8px;border:none;}
 .btn.active{color:#fff;font-weight:bold;}
 .delete{color:#ff3b30;width:40px;}
-.drag{cursor:grab;font-size:18px;}
 .mainBtn{width:100%;padding:12px;border-radius:12px;border:none;color:#fff;font-weight:bold;}
+.utcBtn{margin-top:8px;background:#555!important;}
 .add{width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
 .result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;}
 
-/* 青 */
 .blue .btn{background:#eaf2ff;color:#007aff;}
 .blue .btn.active{background:#007aff;color:#fff;}
 .blue .mainBtn{background:#007aff;}
 .blue .add{background:#eaf2ff;color:#007aff;}
 .blue .title{color:#007aff;}
 
-/* 赤 */
 .red .btn{background:#ffecec;color:#ff3b30;}
 .red .btn.active{background:#ff3b30;color:#fff;}
 .red .mainBtn{background:#ff3b30;}
@@ -44,7 +40,7 @@ input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 #toast{
 position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
 background:#333;color:#fff;padding:10px 16px;border-radius:20px;
-opacity:0;transition:0.3s;pointer-events:none;
+opacity:0;transition:0.3s;pointer-events:none;z-index:999;
 }
 </style>
 </head>
@@ -89,7 +85,8 @@ return `
 </div>
 
 <div class="card">
-<button class="mainBtn" onclick="calc(${id})">計算&コピーするワン</button>
+<button class="mainBtn" onclick="calc(${id},false)">計算&コピーするワン</button>
+<button class="mainBtn utcBtn" onclick="calc(${id},true)">UTCでコピーするワン</button>
 </div>
 
 <div class="card">
@@ -116,11 +113,11 @@ el.innerHTML=`
 </div>
 
 <div class="line">
-<button class="btn" onclick="setSec('${tool}_${id}',30,this)">30</button>
-<button class="btn" onclick="setSec('${tool}_${id}',32,this)">32</button>
-<button class="btn active" onclick="setSec('${tool}_${id}',36,this)">36</button>
-<button class="btn" onclick="setSec('${tool}_${id}',39,this)">39</button>
-<button class="btn" onclick="setSec('${tool}_${id}',43,this)">43</button>
+<button class="btn secbtn" onclick="setSec('${tool}_${id}',30,this)">30</button>
+<button class="btn secbtn" onclick="setSec('${tool}_${id}',32,this)">32</button>
+<button class="btn secbtn active" onclick="setSec('${tool}_${id}',36,this)">36</button>
+<button class="btn secbtn" onclick="setSec('${tool}_${id}',39,this)">39</button>
+<button class="btn secbtn" onclick="setSec('${tool}_${id}',43,this)">43</button>
 </div>
 `;
 
@@ -129,7 +126,7 @@ document.getElementById(`list${tool}`).appendChild(el);
 
 function setSec(id,val,btn){
 document.getElementById("s"+id).value=val;
-btn.parentNode.querySelectorAll(".btn").forEach(b=>b.classList.remove("active"));
+btn.parentNode.querySelectorAll(".secbtn").forEach(b=>b.classList.remove("active"));
 btn.classList.add("active");
 }
 
@@ -153,7 +150,7 @@ t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,1500);
 }
 
-function calc(tool){
+function calc(tool,utc=false){
 let h=parseInt(document.getElementById("hour"+tool).value);
 let m=parseInt(document.getElementById("min"+tool).value);
 let s0=parseInt(document.getElementById("start"+tool).value);
@@ -181,10 +178,21 @@ let base=h*3600+m*60+s0;
 
 let out=members.map(x=>{
 let t=base+(maxSec-x.sec);
+
+if(utc){
+  t-=9*3600;
+}
+
+while(t<0) t+=24*3600;
+
 let hh=Math.floor(t/3600)%24;
 let mm=Math.floor((t%3600)/60);
 let ss=t%60;
-return {text:`${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}`,time:t};
+
+return {
+text:`${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc ? " UTC" : ""}`,
+time:t
+};
 });
 
 out.sort((a,b)=>a.time-b.time);
