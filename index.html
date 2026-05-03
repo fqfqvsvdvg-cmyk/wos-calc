@@ -119,23 +119,15 @@ function addRow(){
     <input class="name" placeholder="名前" id="n${id}">
     <input class="sec" id="s${id}" value="36">
 
-    <button class="btn" onclick="addSec(${id},1)">+1</button>
-    <button class="btn" onclick="addSec(${id},-1)">-1</button>
-
     <button class="btn" onclick="setSec(${id},30)">30</button>
-    <button class="btn" onclick="setSec(${id},36)">36</button>
+    <button class="btn" onclick="setSec(${id},32)">32</button>
     <button class="btn" onclick="setSec(${id},39)">39</button>
-    <button class="btn" onclick="setSec(${id},41)">41</button>
+    <button class="btn" onclick="setSec(${id},43)">43</button>
 
     <button class="btn delete" onclick="removeRow(${id})">✕</button>
   `;
 
   document.getElementById("list").appendChild(el);
-}
-
-function addSec(id,val){
-  const el=document.getElementById("s"+id);
-  el.value=parseInt(el.value||0)+val;
 }
 
 function setSec(id,val){
@@ -168,10 +160,18 @@ function calc(){
     if(mm<0){ mm+=60; hh--; }
     if(hh<0) hh+=24;
 
-    out.push(`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)}`);
+    let totalSec = hh*3600 + mm*60 + s;
+
+    out.push({
+      text:`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)}`,
+      time: totalSec
+    });
   });
 
-  let text=out.join("\n");
+  // ★ここがソート
+  out.sort((a,b)=>a.time-b.time);
+
+  let text=out.map(x=>x.text).join("\n");
 
   document.getElementById("result").textContent=text;
   navigator.clipboard.writeText(text);
