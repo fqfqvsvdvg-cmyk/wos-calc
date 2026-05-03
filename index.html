@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>WoS 簡易集結計算</title>
+<style>
+body { font-family: sans-serif; text-align: center; padding: 20px; }
+input { width: 80px; padding: 5px; margin: 5px; }
+button { padding: 10px; margin-top: 10px; }
+pre { background:#eee; padding:10px; }
+</style>
+</head>
+<body>
+
+<h2>WoS 集結タイミング計算（簡易版）</h2>
+
+<p>集結時間（例：8:12）</p>
+<input id="time" placeholder="8:12">
+
+<p>行軍時間（秒）</p>
+<input id="march" placeholder="36">
+
+<br>
+<button onclick="calc()">計算</button>
+
+<pre id="result"></pre>
+
+<script>
+function calc(){
+  let t = document.getElementById("time").value.split(":");
+  let m = parseInt(document.getElementById("march").value);
+
+  let min = parseInt(t[1]);
+  let sec = 40 - m;
+
+  if(sec < 0){
+    sec = 60 + sec;
+    min -= 1;
+  }
+
+  let result = `送信タイミング：${min}分${sec}秒`;
+
+  document.getElementById("result").innerText = result;
+}
+</script>
+
+</body>
+</html>
