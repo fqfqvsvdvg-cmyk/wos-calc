@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>40秒起点 集結時間計算機</title>
+<title>🐶40秒起点 集結時間計算機🐶</title>
 
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont;background:#f5f5f7;margin:0;padding:16px;}
@@ -26,24 +26,24 @@ button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#0
 
 <body>
 
-<h1>🐶40秒起点 集結時間計算機ワン</h1>
+<h1>🐶40秒起点 集結時間計算機🐶</h1>
 
 <div class="card" id="list"></div>
 
-<button class="add" onclick="addRow()">＋ リーダー追加ワン</button>
+<button class="add" onclick="addRow()">＋ リーダー追加</button>
 
 <div class="card">
   集結時間
   <input id="time" placeholder="例 21:00">
-  <div class="note">※40秒起点で送信時間を出すワン</div>
+  <div class="note">※40秒起点で送信時間を出します</div>
 </div>
 
 <div class="card">
-  <button class="main" onclick="calc()">計算＆コピーするワン</button>
+  <button class="main" onclick="calc()">計算＆コピー</button>
 </div>
 
 <div class="card">
-  <div class="result" id="result">ここに結果が出るワン</div>
+  <div class="result" id="result">ここに結果が出ます</div>
 </div>
 
 <script>
@@ -95,7 +95,7 @@ function calc(){
   const timeInput=document.getElementById("time").value.trim();
 
   if(!timeInput){
-    alert("集結時間を入力してねワン🐶");
+    alert("集結時間を入力してワン");
     return;
   }
 
@@ -104,7 +104,7 @@ function calc(){
   let m=parseInt(t[1]);
 
   if(isNaN(h) || isNaN(m)){
-    alert("集結時間は 21:00 みたいに入力してねワン🐶");
+    alert("集結時間は 21:00 の形式で入力してください");
     return;
   }
 
@@ -129,7 +129,7 @@ function calc(){
     let total = hh*3600 + mm*60 + s;
 
     out.push({
-      text:`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)} ワン`,
+      text:`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)}`,
       time: total
     });
   });
@@ -138,7 +138,7 @@ function calc(){
 
   let text=out.map(x=>x.text).join("\n");
 
-  document.getElementById("result").textContent=text || "リーダーを追加してねワン🐶";
+  document.getElementById("result").textContent=text || "リーダーを追加してください";
   navigator.clipboard.writeText(text);
 }
 
