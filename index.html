@@ -6,110 +6,44 @@
 <title>40秒起点 集結時間計算機</title>
 
 <style>
-body{
-  font-family:-apple-system,BlinkMacSystemFont;
-  background:#f5f5f7;
-  margin:0;
-  padding:16px;
-}
-
-h1{
-  text-align:center;
-  font-size:22px;
-  margin-bottom:16px;
-}
-
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:14px;
-}
-
-.row{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  margin-bottom:10px;
-}
-
-.line{
-  display:flex;
-  gap:6px;
-  align-items:center;
-}
-
-input{
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-
+body{font-family:-apple-system,BlinkMacSystemFont;background:#f5f5f7;margin:0;padding:16px;}
+h1{text-align:center;font-size:22px;margin-bottom:16px;}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:14px;}
+.row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.line{display:flex;gap:6px;align-items:center;}
+input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 .name{flex:1;}
 .sec{width:60px;text-align:center;}
-
-.btn{
-  padding:6px 8px;
-  border-radius:8px;
-  border:none;
-  background:#e9e9ed;
-  flex:1;
-}
-
-.delete{
-  color:#ff3b30;
-  font-weight:bold;
-  width:40px;
-}
-
-button.main{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  background:#007aff;
-  color:#fff;
-  font-weight:bold;
-}
-
-.add{
-  background:#e9e9ed;
-  color:#007aff;
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  font-weight:bold;
-}
-
-.result{
-  background:#f1f1f4;
-  padding:12px;
-  border-radius:10px;
-  white-space:pre-wrap;
-}
+.btn{padding:6px 8px;border-radius:8px;border:none;background:#e9e9ed;flex:1;color:#007aff;}
+.btn.active{background:#007aff;color:#fff;font-weight:bold;}
+.delete{color:#ff3b30;font-weight:bold;width:40px;flex:0 0 40px;}
+button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#007aff;color:#fff;font-weight:bold;}
+.add{background:#e9e9ed;color:#007aff;width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
+.result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;}
+.note{font-size:13px;color:#777;margin-top:6px;}
 </style>
 </head>
 
 <body>
 
-<h1>40秒起点 集結時間計算機</h1>
+<h1>🐶40秒起点 集結時間計算機ワン</h1>
 
 <div class="card" id="list"></div>
 
-<button class="add" onclick="addRow()">＋ リーダー追加</button>
+<button class="add" onclick="addRow()">＋ リーダー追加ワン</button>
 
 <div class="card">
   集結時間
-  <input id="time" value="8:12">
+  <input id="time" placeholder="例 21:00">
+  <div class="note">※40秒起点で送信時間を出すワン</div>
 </div>
 
 <div class="card">
-  <button class="main" onclick="calc()">計算＆コピー</button>
+  <button class="main" onclick="calc()">計算＆コピーするワン</button>
 </div>
 
 <div class="card">
-  <div class="result" id="result">ここに結果</div>
+  <div class="result" id="result">ここに結果が出るワン</div>
 </div>
 
 <script>
@@ -131,35 +65,55 @@ function addRow(){
     </div>
 
     <div class="line">
-      <button class="btn" onclick="setSec(${id},30)">30</button>
-      <button class="btn" onclick="setSec(${id},32)">32</button>
-      <button class="btn" onclick="setSec(${id},36)">36</button>
-      <button class="btn" onclick="setSec(${id},39)">39</button>
-      <button class="btn" onclick="setSec(${id},43)">43</button>
+      <button class="btn secbtn" onclick="setSec(${id},30,this)">30</button>
+      <button class="btn secbtn" onclick="setSec(${id},32,this)">32</button>
+      <button class="btn secbtn active" onclick="setSec(${id},36,this)">36</button>
+      <button class="btn secbtn" onclick="setSec(${id},39,this)">39</button>
+      <button class="btn secbtn" onclick="setSec(${id},43,this)">43</button>
     </div>
   `;
 
   document.getElementById("list").appendChild(el);
 }
 
-function setSec(id,val){
+function setSec(id,val,btn){
   document.getElementById("s"+id).value=val;
+
+  const row=document.getElementById(id);
+  row.querySelectorAll(".secbtn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
 }
 
 function removeRow(id){
   document.getElementById(id).remove();
+  rows = rows.filter(x => x !== id);
 }
 
 function pad(n){return String(n).padStart(2,'0')}
 
 function calc(){
-  const t=document.getElementById("time").value.split(":");
+  const timeInput=document.getElementById("time").value.trim();
+
+  if(!timeInput){
+    alert("集結時間を入力してねワン🐶");
+    return;
+  }
+
+  const t=timeInput.split(":");
   let h=parseInt(t[0]);
   let m=parseInt(t[1]);
+
+  if(isNaN(h) || isNaN(m)){
+    alert("集結時間は 21:00 みたいに入力してねワン🐶");
+    return;
+  }
 
   let out=[];
 
   rows.forEach(id=>{
+    const rowEl=document.getElementById(id);
+    if(!rowEl) return;
+
     let name=document.getElementById("n"+id).value || "誰か";
     let sec=parseInt(document.getElementById("s"+id).value);
 
@@ -175,7 +129,7 @@ function calc(){
     let total = hh*3600 + mm*60 + s;
 
     out.push({
-      text:`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)}`,
+      text:`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)} ワン`,
       time: total
     });
   });
@@ -184,9 +138,11 @@ function calc(){
 
   let text=out.map(x=>x.text).join("\n");
 
-  document.getElementById("result").textContent=text;
+  document.getElementById("result").textContent=text || "リーダーを追加してねワン🐶";
   navigator.clipboard.writeText(text);
 }
+
+addRow();
 </script>
 
 </body>
