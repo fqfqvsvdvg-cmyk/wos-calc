@@ -21,6 +21,21 @@ input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#007aff;color:#fff;font-weight:bold;}
 .add{background:#e9e9ed;color:#007aff;width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
 .result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;}
+
+#toast{
+  position:fixed;
+  bottom:40px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#333;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:20px;
+  opacity:0;
+  transition:0.3s;
+  pointer-events:none;
+  z-index:999;
+}
 </style>
 </head>
 
@@ -44,6 +59,8 @@ button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#0
 <div class="card">
   <div class="result" id="result">ここに計算結果が出るワン</div>
 </div>
+
+<div id="toast">コピーしたワン！</div>
 
 <script>
 let dragSrc=null;
@@ -98,6 +115,12 @@ function removeRow(id){
 
 function pad(n){return String(n).padStart(2,'0')}
 
+function showToast(){
+  const t=document.getElementById("toast");
+  t.style.opacity=1;
+  setTimeout(()=>t.style.opacity=0,1500);
+}
+
 function calc(){
   const timeInput=document.getElementById("time").value.trim();
 
@@ -146,6 +169,7 @@ function calc(){
     text || "リーダーを追加してワン";
 
   navigator.clipboard.writeText(text);
+  showToast();
 }
 
 addRow();
