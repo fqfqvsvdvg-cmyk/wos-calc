@@ -15,27 +15,14 @@ input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 .name{flex:1;}
 .sec{width:60px;text-align:center;}
 .btn{padding:6px;border-radius:8px;border:none;background:#e9e9ed;flex:1;color:#007aff;}
-.btn.active{background:#007aff;color:#fff;font-weight:bold;}
+.btn.active{background:#007aff;color:#fff;}
 .delete{color:#ff3b30;width:40px;}
 .drag{cursor:grab;font-size:18px;}
 button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#007aff;color:#fff;font-weight:bold;}
 .add{background:#e9e9ed;color:#007aff;width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
 .result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;}
-
-#toast{
-  position:fixed;
-  bottom:40px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#333;
-  color:#fff;
-  padding:10px 16px;
-  border-radius:20px;
-  opacity:0;
-  transition:0.3s;
-  pointer-events:none;
-  z-index:999;
-}
+.section{margin-bottom:30px;}
+.title{font-weight:bold;margin-bottom:10px;}
 </style>
 </head>
 
@@ -43,34 +30,45 @@ button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#0
 
 <h1>🐶40秒起点 集結時間計算機🐶</h1>
 
-<div class="card" id="list"></div>
-
-<button class="add" onclick="addRow()">集結主を追加するワン</button>
-
-<div class="card">
-  集結時間
-  <input id="time" placeholder="例 21:00">
-</div>
-
-<div class="card">
-  <button class="main" onclick="calc()">計算&コピーするワン</button>
-</div>
-
-<div class="card">
-  <div class="result" id="result">ここに計算結果が出るワン</div>
-</div>
-
-<div id="toast">コピーしたワン！</div>
+<div id="app"></div>
 
 <script>
+function createTool(id){
+  return `
+  <div class="section">
+    <div class="title">ツール${id}</div>
+
+    <div class="card" id="list${id}"></div>
+
+    <button class="add" onclick="addRow(${id})">集結主を追加するワン</button>
+
+    <div class="card">
+      集結時間
+      <input id="time${id}" placeholder="例 21:00">
+    </div>
+
+    <div class="card">
+      <button class="main" onclick="calc(${id})">計算&コピーするワン</button>
+    </div>
+
+    <div class="card">
+      <div class="result" id="result${id}">ここに計算結果が出るワン</div>
+    </div>
+  </div>
+  `;
+}
+
+document.getElementById("app").innerHTML =
+  createTool(1) + createTool(2);
+
 let dragSrc=null;
 
-function addRow(){
-  const id=Date.now();
+function addRow(tool){
+  const id=Date.now()+Math.random();
 
   const el=document.createElement("div");
   el.className="row";
-  el.id=id;
+  el.id=`${tool}_${id}`;
   el.draggable=true;
 
   el.ondragstart=e=>dragSrc=el;
@@ -85,44 +83,34 @@ function addRow(){
   el.innerHTML=`
     <div class="line">
       <span class="drag">≡</span>
-      <input class="name" placeholder="名前" id="n${id}">
-      <input class="sec" id="s${id}" value="36">
-      <button class="btn delete" onclick="removeRow(${id})">✕</button>
+      <input class="name" placeholder="名前" id="n${tool}_${id}">
+      <input class="sec" id="s${tool}_${id}" value="36">
+      <button class="btn delete" onclick="this.parentNode.parentNode.remove()">✕</button>
     </div>
 
     <div class="line">
-      <button class="btn secbtn" onclick="setSec(${id},30,this)">30</button>
-      <button class="btn secbtn" onclick="setSec(${id},32,this)">32</button>
-      <button class="btn secbtn active" onclick="setSec(${id},36,this)">36</button>
-      <button class="btn secbtn" onclick="setSec(${id},39,this)">39</button>
-      <button class="btn secbtn" onclick="setSec(${id},43,this)">43</button>
+      <button class="btn" onclick="setSec('${tool}_${id}',30,this)">30</button>
+      <button class="btn" onclick="setSec('${tool}_${id}',32,this)">32</button>
+      <button class="btn active" onclick="setSec('${tool}_${id}',36,this)">36</button>
+      <button class="btn" onclick="setSec('${tool}_${id}',39,this)">39</button>
+      <button class="btn" onclick="setSec('${tool}_${id}',43,this)">43</button>
     </div>
   `;
 
-  document.getElementById("list").appendChild(el);
+  document.getElementById(`list${tool}`).appendChild(el);
 }
 
 function setSec(id,val,btn){
   document.getElementById("s"+id).value=val;
   const row=document.getElementById(id);
-  row.querySelectorAll(".secbtn").forEach(b=>b.classList.remove("active"));
+  row.querySelectorAll(".btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-}
-
-function removeRow(id){
-  document.getElementById(id).remove();
 }
 
 function pad(n){return String(n).padStart(2,'0')}
 
-function showToast(){
-  const t=document.getElementById("toast");
-  t.style.opacity=1;
-  setTimeout(()=>t.style.opacity=0,1500);
-}
-
-function calc(){
-  const timeInput=document.getElementById("time").value.trim();
+function calc(tool){
+  const timeInput=document.getElementById("time"+tool).value.trim();
 
   if(!timeInput){
     alert("集結時間を入力してワン");
@@ -131,27 +119,19 @@ function calc(){
 
   const [h,m]=timeInput.split(":").map(Number);
 
-  if(isNaN(h)||isNaN(m)){
-    alert("21:00 の形式で入力してワン");
-    return;
-  }
-
   let out=[];
 
-  document.querySelectorAll(".row").forEach(row=>{
+  document.querySelectorAll(`#list${tool} .row`).forEach(row=>{
     const id=row.id;
 
     let name=document.getElementById("n"+id).value || "誰か";
     let sec=parseInt(document.getElementById("s"+id).value);
-
-    if(isNaN(sec)) return;
 
     let s=40-sec;
     let hh=h, mm=m;
 
     if(s<0){ s+=60; mm--; }
     if(mm<0){ mm+=60; hh--; }
-    if(hh<0) hh+=24;
 
     let total = hh*3600 + mm*60 + s;
 
@@ -165,14 +145,14 @@ function calc(){
 
   let text=out.map(x=>x.text).join("\n");
 
-  document.getElementById("result").textContent =
+  document.getElementById("result"+tool).textContent =
     text || "集結主を追加してワン";
 
   navigator.clipboard.writeText(text);
-  showToast();
 }
 
-addRow();
+addRow(1);
+addRow(2);
 </script>
 
 </body>
