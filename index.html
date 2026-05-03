@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>集結時間計算機</title>
+<title>40秒起点 集結時間計算機</title>
 
 <style>
 body{
@@ -28,18 +28,33 @@ h1{
 
 .row{
   display:flex;
-  gap:8px;
-  margin-bottom:8px;
+  gap:6px;
+  align-items:center;
+  margin-bottom:10px;
 }
 
 input{
-  flex:1;
   padding:10px;
   border-radius:10px;
   border:1px solid #ddd;
 }
 
-button{
+.name{flex:1;}
+.sec{width:60px;text-align:center;}
+
+.btn{
+  padding:6px 8px;
+  border-radius:8px;
+  border:none;
+  background:#e9e9ed;
+}
+
+.delete{
+  color:#ff3b30;
+  font-weight:bold;
+}
+
+button.main{
   width:100%;
   padding:12px;
   border-radius:12px;
@@ -52,6 +67,11 @@ button{
 .add{
   background:#e9e9ed;
   color:#007aff;
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-weight:bold;
 }
 
 .result{
@@ -65,19 +85,19 @@ button{
 
 <body>
 
-<h1>集結時間計算機</h1>
+<h1>40秒起点 集結時間計算機</h1>
 
 <div class="card" id="list"></div>
 
 <button class="add" onclick="addRow()">＋ リーダー追加</button>
 
 <div class="card">
-  <div>集結時間</div>
+  集結時間
   <input id="time" value="8:12">
 </div>
 
 <div class="card">
-  <button onclick="calc()">計算＆コピー</button>
+  <button class="main" onclick="calc()">計算＆コピー</button>
 </div>
 
 <div class="card">
@@ -96,11 +116,34 @@ function addRow(){
   el.id=id;
 
   el.innerHTML=`
-    <input placeholder="名前" id="n${id}">
-    <input placeholder="秒" id="s${id}" type="number">
+    <input class="name" placeholder="名前" id="n${id}">
+    <input class="sec" id="s${id}" value="36">
+
+    <button class="btn" onclick="addSec(${id},1)">+1</button>
+    <button class="btn" onclick="addSec(${id},-1)">-1</button>
+
+    <button class="btn" onclick="setSec(${id},30)">30</button>
+    <button class="btn" onclick="setSec(${id},36)">36</button>
+    <button class="btn" onclick="setSec(${id},39)">39</button>
+    <button class="btn" onclick="setSec(${id},41)">41</button>
+
+    <button class="btn delete" onclick="removeRow(${id})">✕</button>
   `;
 
   document.getElementById("list").appendChild(el);
+}
+
+function addSec(id,val){
+  const el=document.getElementById("s"+id);
+  el.value=parseInt(el.value||0)+val;
+}
+
+function setSec(id,val){
+  document.getElementById("s"+id).value=val;
+}
+
+function removeRow(id){
+  document.getElementById(id).remove();
 }
 
 function pad(n){return String(n).padStart(2,'0')}
@@ -125,13 +168,12 @@ function calc(){
     if(mm<0){ mm+=60; hh--; }
     if(hh<0) hh+=24;
 
-    out.push(`${name} ${pad(hh)}:${pad(mm)}:${pad(s)}`);
+    out.push(`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)}`);
   });
 
   let text=out.join("\n");
 
   document.getElementById("result").textContent=text;
-
   navigator.clipboard.writeText(text);
 }
 </script>
