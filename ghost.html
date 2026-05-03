@@ -8,19 +8,33 @@
 <style>
 body{font-family:-apple-system;background:#f5f5f7;margin:0;padding:16px;}
 h1{text-align:center;font-size:22px;margin-bottom:16px;}
+.section{margin-bottom:30px;}
 .card{background:#fff;border-radius:14px;padding:14px;margin-bottom:14px;}
+.title{font-size:18px;font-weight:bold;margin-bottom:8px;}
 .row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
 .line{display:flex;gap:6px;align-items:center;}
-input,select{padding:10px;border-radius:10px;border:1px solid #ddd;}
+input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 .name{flex:1;}
 .sec{width:70px;text-align:center;}
-.btn{padding:6px;border-radius:8px;border:none;background:#e9e9ed;flex:1;color:#007aff;}
-.btn.active{background:#007aff;color:#fff;font-weight:bold;}
+.btn{padding:6px;border-radius:8px;border:none;flex:1;}
+.btn.active{color:#fff;font-weight:bold;}
 .delete{color:#ff3b30;width:40px;}
 .drag{cursor:grab;font-size:18px;}
-button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#007aff;color:#fff;font-weight:bold;}
-.add{background:#e9e9ed;color:#007aff;width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
+.mainBtn{width:100%;padding:12px;border-radius:12px;border:none;color:#fff;font-weight:bold;}
+.add{width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
 .result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;}
+
+.blue .title{color:#007aff;}
+.blue .btn{background:#eaf2ff;color:#007aff;}
+.blue .btn.active{background:#007aff;color:#fff;}
+.blue .mainBtn{background:#007aff;}
+.blue .add{background:#eaf2ff;color:#007aff;}
+
+.red .title{color:#ff3b30;}
+.red .btn{background:#ffecec;color:#ff3b30;}
+.red .btn.active{background:#ff3b30;color:#fff;}
+.red .mainBtn{background:#ff3b30;}
+.red .add{background:#ffecec;color:#ff3b30;}
 
 #toast{
   position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
@@ -34,42 +48,56 @@ button.main{width:100%;padding:12px;border-radius:12px;border:none;background:#0
 
 <h1>🐶連撃 同時着弾計算機🐶</h1>
 
-<div class="card" id="list"></div>
-
-<button class="add" onclick="addRow()">集結主を追加するワン</button>
-
-<div class="card">
-  基準時間
-  <input id="baseTime" placeholder="例 21:00">
-</div>
-
-<div class="card">
-  スタート秒
-  <select id="startSecond">
-    <option value="0">00秒</option>
-    <option value="30">30秒</option>
-  </select>
-</div>
-
-<div class="card">
-  <button class="main" onclick="calc()">計算&コピーするワン</button>
-</div>
-
-<div class="card">
-  <div class="result" id="result">ここに計算結果が出るワン</div>
-</div>
-
+<div id="app"></div>
 <div id="toast">コピーしたワン！</div>
 
 <script>
+function createTool(id,name,color){
+  return `
+  <div class="section ${color}">
+    <div class="title">${name}</div>
+
+    <div class="card" id="list${id}"></div>
+
+    <button class="add" onclick="addRow(${id})">集結主を追加するワン</button>
+
+    <div class="card">
+      基準時間
+      <input id="baseTime${id}" placeholder="例 21:00">
+    </div>
+
+    <div class="card">
+      スタート秒
+      <div class="line">
+        <button class="btn startbtn active" onclick="setStartSecond(${id},0,this)">00秒</button>
+        <button class="btn startbtn" onclick="setStartSecond(${id},30,this)">30秒</button>
+      </div>
+      <input type="hidden" id="startSecond${id}" value="0">
+    </div>
+
+    <div class="card">
+      <button class="mainBtn" onclick="calc(${id})">計算&コピーするワン</button>
+    </div>
+
+    <div class="card">
+      <div class="result" id="result${id}">ここに計算結果が出るワン</div>
+    </div>
+  </div>
+  `;
+}
+
+document.getElementById("app").innerHTML =
+  createTool(1,"メイン集結","blue") +
+  createTool(2,"ゴースト集結","red");
+
 let dragSrc=null;
 
-function addRow(){
+function addRow(tool){
   const id=Date.now()+Math.random();
 
   const el=document.createElement("div");
   el.className="row";
-  el.id=id;
+  el.id=`${tool}_${id}`;
   el.draggable=true;
 
   el.ondragstart=e=>dragSrc=el;
@@ -84,21 +112,21 @@ function addRow(){
   el.innerHTML=`
     <div class="line">
       <span class="drag">≡</span>
-      <input class="name" placeholder="名前" id="n${id}">
-      <input class="sec" id="s${id}" value="36">
-      <button class="btn delete" onclick="removeRow(${id})">✕</button>
+      <input class="name" placeholder="名前" id="n${tool}_${id}">
+      <input class="sec" id="s${tool}_${id}" value="36">
+      <button class="delete" onclick="this.parentNode.parentNode.remove()">✕</button>
     </div>
 
     <div class="line">
-      <button class="btn secbtn" onclick="setSec(${id},30,this)">30</button>
-      <button class="btn secbtn" onclick="setSec(${id},32,this)">32</button>
-      <button class="btn secbtn active" onclick="setSec(${id},36,this)">36</button>
-      <button class="btn secbtn" onclick="setSec(${id},39,this)">39</button>
-      <button class="btn secbtn" onclick="setSec(${id},43,this)">43</button>
+      <button class="btn secbtn" onclick="setSec('${tool}_${id}',30,this)">30</button>
+      <button class="btn secbtn" onclick="setSec('${tool}_${id}',32,this)">32</button>
+      <button class="btn secbtn active" onclick="setSec('${tool}_${id}',36,this)">36</button>
+      <button class="btn secbtn" onclick="setSec('${tool}_${id}',39,this)">39</button>
+      <button class="btn secbtn" onclick="setSec('${tool}_${id}',43,this)">43</button>
     </div>
   `;
 
-  document.getElementById("list").appendChild(el);
+  document.getElementById(`list${tool}`).appendChild(el);
 }
 
 function setSec(id,val,btn){
@@ -108,8 +136,11 @@ function setSec(id,val,btn){
   btn.classList.add("active");
 }
 
-function removeRow(id){
-  document.getElementById(id).remove();
+function setStartSecond(tool,val,btn){
+  document.getElementById("startSecond"+tool).value=val;
+  const section=btn.closest(".section");
+  section.querySelectorAll(".startbtn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
 }
 
 function pad(n){return String(n).padStart(2,'0')}
@@ -120,8 +151,8 @@ function showToast(){
   setTimeout(()=>t.style.opacity=0,1500);
 }
 
-function calc(){
-  const baseInput=document.getElementById("baseTime").value.trim();
+function calc(tool){
+  const baseInput=document.getElementById("baseTime"+tool).value.trim();
 
   if(!baseInput){
     alert("基準時間を入力してワン");
@@ -129,7 +160,7 @@ function calc(){
   }
 
   const [h,m]=baseInput.split(":").map(Number);
-  const startSec=parseInt(document.getElementById("startSecond").value);
+  const startSec=parseInt(document.getElementById("startSecond"+tool).value);
 
   if(isNaN(h)||isNaN(m)){
     alert("21:00 の形式で入力してワン");
@@ -138,24 +169,22 @@ function calc(){
 
   let members=[];
 
-  document.querySelectorAll(".row").forEach(row=>{
+  document.querySelectorAll(`#list${tool} .row`).forEach(row=>{
     const id=row.id;
-    let name=document.getElementById("n"+id).value || "誰か";
-    let sec=parseInt(document.getElementById("s"+id).value);
+    const name=document.getElementById("n"+id).value || "誰か";
+    const sec=parseInt(document.getElementById("s"+id).value);
 
     if(isNaN(sec)) return;
-
     members.push({name,sec});
   });
 
   if(members.length===0){
-    document.getElementById("result").textContent="集結主を追加してワン";
+    document.getElementById("result"+tool).textContent="集結主を追加してワン";
     return;
   }
 
   const maxSec=Math.max(...members.map(x=>x.sec));
-
-  let baseTotal=h*3600+m*60+startSec;
+  const baseTotal=h*3600+m*60+startSec;
 
   let out=members.map(x=>{
     const offset=maxSec-x.sec;
@@ -166,21 +195,22 @@ function calc(){
     const ss=sendTotal%60;
 
     return {
-      text:`${x.name}(${x.sec}秒) → ${pad(hh)}:${pad(mm)}:${pad(ss)}`,
+      text:`${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}`,
       time:sendTotal
     };
   });
 
   out.sort((a,b)=>a.time-b.time);
 
-  let text=out.map(x=>x.text).join("\n");
+  const text=out.map(x=>x.text).join("\n");
 
-  document.getElementById("result").textContent=text;
+  document.getElementById("result"+tool).textContent=text;
   navigator.clipboard.writeText(text);
   showToast();
 }
 
-addRow();
+addRow(1);
+addRow(2);
 </script>
 
 </body>
