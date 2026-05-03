@@ -2,207 +2,235 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🐶連撃 同時着弾計算機🐶</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ぷてぃ研の連撃計算機</title>
+
+<!-- OGP -->
+<meta property="og:title" content="ぷてぃ研の連撃計算機">
+<meta property="og:description" content="連撃の同時着弾タイミングを簡単計算🐶">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/ghost.html">
+<meta property="og:image" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/IMG_0387.jpeg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ぷてぃ研の連撃計算機">
+<meta name="twitter:description" content="連撃の同時着弾タイミングを簡単計算🐶">
+<meta name="twitter:image" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/IMG_0387.jpeg">
 
 <style>
-body{font-family:-apple-system;background:#f5f5f7;margin:0;padding:16px;}
-h1{text-align:center;font-size:22px;margin-bottom:16px;}
-.section{margin-bottom:30px;}
-.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:14px;}
-.title{font-size:18px;font-weight:bold;margin-bottom:8px;}
-.row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
-.line{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-input{padding:10px;border-radius:10px;border:1px solid #ddd;}
+body{
+  font-family:-apple-system;
+  background:#f5f5f7;
+  margin:0;
+  padding:16px;
+}
+h1{
+  text-align:center;
+}
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:16px;
+}
+.row{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.line{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+input{
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
 .name{flex:1;}
 .sec{width:70px;text-align:center;}
-.timeMin{width:90px;text-align:center;}
-.btn{padding:6px 8px;border-radius:8px;border:none;}
-.btn.active{color:#fff;font-weight:bold;}
-.delete{color:#ff3b30;width:40px;}
-.mainBtn{width:100%;padding:12px;border-radius:12px;border:none;color:#fff;font-weight:bold;}
-.utcBtn{margin-top:8px;background:#555!important;}
-.add{width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
-.result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;}
+.timeMin{width:80px;text-align:center;}
 
-.blue .btn{background:#eaf2ff;color:#007aff;}
-.blue .btn.active{background:#007aff;color:#fff;}
-.blue .mainBtn{background:#007aff;}
-.blue .add{background:#eaf2ff;color:#007aff;}
-.blue .title{color:#007aff;}
+.btn{
+  background:#007aff;
+  color:#fff;
+  padding:12px;
+  border-radius:10px;
+  text-align:center;
+  margin-top:10px;
+}
 
-.red .btn{background:#ffecec;color:#ff3b30;}
-.red .btn.active{background:#ff3b30;color:#fff;}
-.red .mainBtn{background:#ff3b30;}
-.red .add{background:#ffecec;color:#ff3b30;}
-.red .title{color:#ff3b30;}
+.red{background:#ff3b30;}
+.gray{background:#ddd;color:#000;}
 
-#toast{
-position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
-background:#333;color:#fff;padding:10px 16px;border-radius:20px;
-opacity:0;transition:0.3s;pointer-events:none;z-index:999;
+.result{
+  background:#f1f1f4;
+  padding:12px;
+  border-radius:10px;
+  white-space:pre-wrap;
+}
+
+button{
+  border:none;
+  border-radius:8px;
+  padding:8px 10px;
+}
+
+.active{
+  background:#007aff;
+  color:#fff;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🐶連撃 同時着弾計算機🐶</h1>
+<h1>🐶ぷてぃ研の連撃計算機🐶</h1>
 
-<div id="app"></div>
-<div id="toast">コピーしたワン！</div>
+<!-- ===== メイン集結 ===== -->
+<div class="card">
+<div><b>メイン集結</b></div>
+
+<div id="mainList"></div>
+
+<div class="btn gray" onclick="addRow('main')">集結主を追加するワン</div>
+
+<br>
+<div>基準時間（例 21:00）</div>
+
+<div class="line">
+<button onclick="setHour('main',21)">21</button>
+<button onclick="setHour('main',22)">22</button>
+<button onclick="setHour('main',23)">23</button>
+<button onclick="setHour('main',24)">24</button>
+<button onclick="setHour('main',1)">1</button>
+<input id="mainMin" class="timeMin" placeholder="分">
+</div>
+
+<div>スタート秒</div>
+<div class="line">
+<button onclick="setStart('main',0)">0秒</button>
+<button onclick="setStart('main',30)">30秒</button>
+</div>
+
+<div class="btn" onclick="calc('main')">計算&コピーするワン</div>
+
+<div id="mainResult" class="result">ここに計算結果が出るワン</div>
+</div>
+
+<!-- ===== ゴースト集結 ===== -->
+<div class="card">
+<div><b>ゴースト集結</b></div>
+
+<div id="ghostList"></div>
+
+<div class="btn gray" onclick="addRow('ghost')">集結主を追加するワン</div>
+
+<br>
+<div>基準時間（例 21:00）</div>
+
+<div class="line">
+<button onclick="setHour('ghost',21)">21</button>
+<button onclick="setHour('ghost',22)">22</button>
+<button onclick="setHour('ghost',23)">23</button>
+<button onclick="setHour('ghost',24)">24</button>
+<button onclick="setHour('ghost',1)">1</button>
+<input id="ghostMin" class="timeMin" placeholder="分">
+</div>
+
+<div>スタート秒</div>
+<div class="line">
+<button onclick="setStart('ghost',0)">0秒</button>
+<button onclick="setStart('ghost',30)">30秒</button>
+</div>
+
+<div class="btn red" onclick="calc('ghost')">計算&コピーするワン</div>
+
+<div id="ghostResult" class="result">ここに計算結果が出るワン</div>
+</div>
 
 <script>
-function createTool(id,name,color){
-return `
-<div class="section ${color}">
-<div class="title">${name}</div>
-
-<div class="card" id="list${id}"></div>
-<button class="add" onclick="addRow(${id})">集結主を追加するワン</button>
-
-<div class="card">
-基準時間（例 21:00）
-<div class="line">
-<button class="btn hourbtn active" onclick="setHour(${id},21,this)">21</button>
-<button class="btn hourbtn" onclick="setHour(${id},22,this)">22</button>
-<button class="btn hourbtn" onclick="setHour(${id},23,this)">23</button>
-<button class="btn hourbtn" onclick="setHour(${id},24,this)">24</button>
-<button class="btn hourbtn" onclick="setHour(${id},1,this)">1</button>
-:
-<input id="min${id}" class="timeMin" placeholder="00〜59">
-</div>
-<input type="hidden" id="hour${id}" value="21">
-</div>
-
-<div class="card">
-スタート秒
-<div class="line">
-<button class="btn startbtn active" onclick="setStart(${id},0,this)">00秒</button>
-<button class="btn startbtn" onclick="setStart(${id},30,this)">30秒</button>
-</div>
-<input type="hidden" id="start${id}" value="0">
-</div>
-
-<div class="card">
-<button class="mainBtn" onclick="calc(${id},false)">計算&コピーするワン</button>
-<button class="mainBtn utcBtn" onclick="calc(${id},true)">UTCでコピーするワン</button>
-</div>
-
-<div class="card">
-<div class="result" id="result${id}">ここに計算結果が出るワン</div>
-</div>
-</div>`;
-}
-
-document.getElementById("app").innerHTML=
-createTool(1,"メイン集結","blue")+
-createTool(2,"ゴースト集結","red");
-
-function addRow(tool){
-const id=Date.now()+Math.random();
-const el=document.createElement("div");
-el.className="row";
-el.id=`${tool}_${id}`;
-
-el.innerHTML=`
-<div class="line">
-<input class="name" placeholder="名前" id="n${tool}_${id}">
-<input class="sec" id="s${tool}_${id}" value="36">
-<button class="delete" onclick="this.parentNode.parentNode.remove()">✕</button>
-</div>
-
-<div class="line">
-<button class="btn secbtn" onclick="setSec('${tool}_${id}',30,this)">30</button>
-<button class="btn secbtn" onclick="setSec('${tool}_${id}',32,this)">32</button>
-<button class="btn secbtn active" onclick="setSec('${tool}_${id}',36,this)">36</button>
-<button class="btn secbtn" onclick="setSec('${tool}_${id}',39,this)">39</button>
-<button class="btn secbtn" onclick="setSec('${tool}_${id}',43,this)">43</button>
-</div>
-`;
-
-document.getElementById(`list${tool}`).appendChild(el);
-}
-
-function setSec(id,val,btn){
-document.getElementById("s"+id).value=val;
-btn.parentNode.querySelectorAll(".secbtn").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-}
-
-function setHour(tool,val,btn){
-document.getElementById("hour"+tool).value=val;
-btn.parentNode.querySelectorAll(".hourbtn").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-}
-
-function setStart(tool,val,btn){
-document.getElementById("start"+tool).value=val;
-btn.parentNode.querySelectorAll(".startbtn").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-}
-
-function pad(n){return String(n).padStart(2,'0')}
-
-function showToast(){
-const t=document.getElementById("toast");
-t.style.opacity=1;
-setTimeout(()=>t.style.opacity=0,1500);
-}
-
-function calc(tool,utc=false){
-let h=parseInt(document.getElementById("hour"+tool).value);
-let m=parseInt(document.getElementById("min"+tool).value);
-let s0=parseInt(document.getElementById("start"+tool).value);
-
-if(isNaN(m) || m<0 || m>59){
-alert("分は0〜59で入力してワン");
-return;
-}
-
-let members=[];
-document.querySelectorAll(`#list${tool} .row`).forEach(row=>{
-const id=row.id;
-const name=document.getElementById("n"+id).value||"誰か";
-const sec=parseInt(document.getElementById("s"+id).value);
-if(!isNaN(sec)) members.push({name,sec});
-});
-
-if(members.length===0){
-document.getElementById("result"+tool).textContent="集結主を追加してワン";
-return;
-}
-
-const maxSec=Math.max(...members.map(x=>x.sec));
-let base=h*3600+m*60+s0;
-
-let out=members.map(x=>{
-let t=base+(maxSec-x.sec);
-
-if(utc) t-=9*3600;
-while(t<0) t+=24*3600;
-
-let hh=Math.floor(t/3600)%24;
-let mm=Math.floor((t%3600)/60);
-let ss=t%60;
-
-return {
-text:`${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`,
-time:t
+let data={
+  main:{hour:null,start:0},
+  ghost:{hour:null,start:0}
 };
-});
 
-out.sort((a,b)=>a.time-b.time);
-
-let text=out.map(x=>x.text).join("\n");
-document.getElementById("result"+tool).textContent=text;
-
-navigator.clipboard.writeText(text);
-showToast();
+function addRow(type){
+  let div=document.createElement("div");
+  div.className="line";
+  div.innerHTML=`
+    <input class="name" placeholder="名前">
+    <input class="sec" placeholder="秒">
+    <button onclick="this.parentNode.remove()">❌</button>
+  `;
+  document.getElementById(type+"List").appendChild(div);
 }
 
-addRow(1);
-addRow(2);
+function setHour(type,h){
+  data[type].hour=h;
+}
+
+function setStart(type,s){
+  data[type].start=s;
+}
+
+function calc(type){
+  let hour=data[type].hour;
+  let min=document.getElementById(type+"Min").value;
+
+  if(hour===null || min===""){
+    alert("基準時間を入力してワン");
+    return;
+  }
+
+  let rows=document.querySelectorAll("#"+type+"List .line");
+  let times=[];
+
+  rows.forEach(r=>{
+    let name=r.children[0].value||"誰か";
+    let sec=parseInt(r.children[1].value);
+
+    if(!isNaN(sec)){
+      times.push({name,sec});
+    }
+  });
+
+  if(times.length===0)return;
+
+  let max=Math.max(...times.map(t=>t.sec));
+
+  let result="";
+
+  times.forEach(t=>{
+    let diff=max-t.sec;
+    let startSec=data[type].start-diff;
+
+    let h=hour;
+    let m=parseInt(min);
+    let s=startSec;
+
+    while(s<0){
+      s+=60;
+      m--;
+    }
+    while(m<0){
+      m+=60;
+      h--;
+    }
+
+    result+=`${t.name} ${h}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}\n`;
+  });
+
+  navigator.clipboard.writeText(result);
+
+  document.getElementById(type+"Result").innerText=result+"\nコピーしたワン！";
+}
+
+// 初期1行
+addRow("main");
+addRow("ghost");
 </script>
 
 </body>
