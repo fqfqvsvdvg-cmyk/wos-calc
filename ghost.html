@@ -16,7 +16,7 @@ h1{text-align:center;font-size:22px;margin-bottom:16px;}
 input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 .name{flex:1;}
 .sec{width:70px;text-align:center;}
-.timeMin{width:80px;text-align:center;}
+.timeMin{width:90px;text-align:center;}
 .btn{padding:6px 8px;border-radius:8px;border:none;}
 .btn.active{color:#fff;font-weight:bold;}
 .delete{color:#ff3b30;width:40px;}
@@ -62,7 +62,7 @@ return `
 <button class="add" onclick="addRow(${id})">集結主を追加するワン</button>
 
 <div class="card">
-基準時間
+基準時間（例 21:00）
 <div class="line">
 <button class="btn hourbtn active" onclick="setHour(${id},21,this)">21</button>
 <button class="btn hourbtn" onclick="setHour(${id},22,this)">22</button>
@@ -70,7 +70,7 @@ return `
 <button class="btn hourbtn" onclick="setHour(${id},24,this)">24</button>
 <button class="btn hourbtn" onclick="setHour(${id},1,this)">1</button>
 :
-<input id="min${id}" class="timeMin" placeholder="00">
+<input id="min${id}" class="timeMin" placeholder="00〜59">
 </div>
 <input type="hidden" id="hour${id}" value="21">
 </div>
@@ -155,8 +155,8 @@ let h=parseInt(document.getElementById("hour"+tool).value);
 let m=parseInt(document.getElementById("min"+tool).value);
 let s0=parseInt(document.getElementById("start"+tool).value);
 
-if(isNaN(m)){
-alert("分を入力してワン");
+if(isNaN(m) || m<0 || m>59){
+alert("分は0〜59で入力してワン");
 return;
 }
 
@@ -179,10 +179,7 @@ let base=h*3600+m*60+s0;
 let out=members.map(x=>{
 let t=base+(maxSec-x.sec);
 
-if(utc){
-  t-=9*3600;
-}
-
+if(utc) t-=9*3600;
 while(t<0) t+=24*3600;
 
 let hh=Math.floor(t/3600)%24;
@@ -190,7 +187,7 @@ let mm=Math.floor((t%3600)/60);
 let ss=t%60;
 
 return {
-text:`${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc ? " UTC" : ""}`,
+text:`${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`,
 time:t
 };
 });
