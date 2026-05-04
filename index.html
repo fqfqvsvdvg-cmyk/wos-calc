@@ -17,7 +17,7 @@
 
 <!-- OGP -->
 <meta property="og:title" content="ぷてぃ研の連撃計算機">
-<meta property="og:description" content="通常連撃・40秒起点・砦霜竜用を簡単計算🐶">
+<meta property="og:description" content="ホワサバの集結連撃を簡単計算するワン🐶">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/index.html">
 <meta property="og:image" content="https://raw.githubusercontent.com/fqfqvsvdvg-cmyk/wos-calc/refs/heads/main/E41A3360-3F58-47D4-A317-EA0B585DA76A.png">
@@ -130,6 +130,14 @@ function setActive(btn,cls){btn.parentNode.querySelectorAll(cls).forEach(b=>b.cl
 function setHidden(id,val,btn,cls){document.getElementById(id).value=val;setActive(btn,cls);}
 function setSec(rowId,val,btn){document.getElementById("sec_"+rowId).value=val;setActive(btn,".smallbtn");}
 
+function clearErrors(areaId){
+  document.querySelectorAll("#"+areaId+" input").forEach(i=>i.classList.remove("error"));
+}
+
+function showErrors(errors){
+  alert([...new Set(errors)].join("\n"));
+}
+
 function timeUI(prefix,id){
 return `
 <div>基準時間（例 21:00）</div>
@@ -158,7 +166,7 @@ return `
 /* 通常連撃 */
 function normalTool(id,name,color){
 return `
-<div class="section ${color}">
+<div class="section ${color}" id="normalBox${id}">
 <div class="title">${name}</div>
 <div id="normalList${id}"></div>
 <button class="btn add" onclick="addNormalRow(${id})">集結主を追加するワン</button>
@@ -191,18 +199,33 @@ document.getElementById("normalList"+tool).appendChild(el);
 }
 
 function calcNormal(tool,utc){
+clearErrors("normalBox"+tool);
+
+let minEl=document.getElementById("normalMin"+tool);
 let h=parseInt(document.getElementById("normalHour"+tool).value);
-let m=parseInt(document.getElementById("normalMin"+tool).value);
+let m=parseInt(minEl.value);
 let s0=parseInt(document.getElementById("normalStart"+tool).value);
-if(isNaN(m)||m<0||m>59){alert("分は0〜59で入力してワン");return;}
+let errors=[];
+
+if(minEl.value.trim()==="" || isNaN(m) || m<0 || m>59){
+  errors.push("基準時間を入力してワン");
+  minEl.classList.add("error");
+}
 
 let members=[];
 document.querySelectorAll("#normalList"+tool+" .row").forEach(row=>{
-const name=document.getElementById("name_"+row.id).value||"誰か";
-const sec=parseInt(document.getElementById("sec_"+row.id).value);
-if(!isNaN(sec))members.push({name,sec});
+const nameEl=document.getElementById("name_"+row.id);
+const secEl=document.getElementById("sec_"+row.id);
+const name=nameEl.value.trim();
+const sec=secEl.value.trim();
+
+if(name===""){errors.push("名前を入力してワン");nameEl.classList.add("error");}
+if(sec==="" || isNaN(parseInt(sec))){errors.push("行軍を入力してワン");secEl.classList.add("error");}
+
+members.push({name:name||"誰か",sec:parseInt(sec)});
 });
-if(!members.length){copyText("集結主を追加してワン","normalResult"+tool);return;}
+
+if(errors.length){showErrors(errors);return;}
 
 const maxSec=Math.max(...members.map(x=>x.sec));
 let base=h*3600+m*60+s0;
@@ -219,7 +242,7 @@ copyText(text,"normalResult"+tool);
 /* 40秒起点 */
 function fortyTool(id,name,color){
 return `
-<div class="section ${color}">
+<div class="section ${color}" id="fortyBox${id}">
 <div class="title">${name}</div>
 <div id="fortyList${id}"></div>
 <button class="btn add" onclick="addFortyRow(${id})">集結主を追加するワン</button>
@@ -252,24 +275,39 @@ document.getElementById("fortyList"+tool).appendChild(el);
 }
 
 function calcForty(tool,utc){
+clearErrors("fortyBox"+tool);
+
+let minEl=document.getElementById("fortyMin"+tool);
 let h=parseInt(document.getElementById("fortyHour"+tool).value);
-let m=parseInt(document.getElementById("fortyMin"+tool).value);
+let m=parseInt(minEl.value);
 let start=parseInt(document.getElementById("fortyStart"+tool).value);
-if(isNaN(m)||m<0||m>59){alert("分は0〜59で入力してワン");return;}
+let errors=[];
+
+if(minEl.value.trim()==="" || isNaN(m) || m<0 || m>59){
+  errors.push("基準時間を入力してワン");
+  minEl.classList.add("error");
+}
 
 let out=[];
 document.querySelectorAll("#fortyList"+tool+" .row").forEach(row=>{
-const name=document.getElementById("name_"+row.id).value||"誰か";
-const sec=parseInt(document.getElementById("sec_"+row.id).value);
-if(isNaN(sec))return;
+const nameEl=document.getElementById("name_"+row.id);
+const secEl=document.getElementById("sec_"+row.id);
+const name=nameEl.value.trim();
+const sec=secEl.value.trim();
 
-let t=h*3600+m*60+start+(40-sec);
-while(t<0)t+=86400;
-if(utc)t-=9*3600;
-while(t<0)t+=86400;
+if(name===""){errors.push("名前を入力してワン");nameEl.classList.add("error");}
+if(sec==="" || isNaN(parseInt(sec))){errors.push("行軍を入力してワン");secEl.classList.add("error");}
 
-out.push({name,time:t});
+if(name!=="" && sec!=="" && !isNaN(parseInt(sec))){
+  let t=h*3600+m*60+start+(40-parseInt(sec));
+  while(t<0)t+=86400;
+  if(utc)t-=9*3600;
+  while(t<0)t+=86400;
+  out.push({name,time:t});
+}
 });
+
+if(errors.length){showErrors(errors);return;}
 
 out.sort((a,b)=>a.time-b.time);
 
@@ -278,13 +316,13 @@ let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
 return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
 }).join("\n");
 
-copyText(text||"集結主を追加してワン","fortyResult"+tool);
+copyText(text,"fortyResult"+tool);
 }
 
 /* 砦・霜竜 */
 function fortressBlock(id,name,color){
 return `
-<div class="section ${color}">
+<div class="section ${color}" id="fortressBox${id}">
 <div class="title">${name}</div>
 <div id="fortressList${id}"></div>
 <button class="btn add" onclick="addFortressRow(${id})">集結主を追加するワン</button>
@@ -324,23 +362,30 @@ document.getElementById("fortressList"+tool).appendChild(el);
 }
 
 function calcFortress(tool,utc){
-const hEl=document.getElementById("fortressH"+tool),mEl=document.getElementById("fortressM"+tool);
-document.querySelectorAll("#fortressList"+tool+" input").forEach(i=>i.classList.remove("error"));
-hEl.classList.remove("error");mEl.classList.remove("error");
+clearErrors("fortressBox"+tool);
+
+const hEl=document.getElementById("fortressH"+tool);
+const mEl=document.getElementById("fortressM"+tool);
 
 let errors=[];
-if(hEl.value.trim()===""||mEl.value.trim()===""){errors.push("基準時間を入力してワン");hEl.classList.add("error");mEl.classList.add("error");}
+if(hEl.value.trim()===""||mEl.value.trim()==="" || isNaN(parseInt(hEl.value)) || isNaN(parseInt(mEl.value))){
+  errors.push("基準時間を入力してワン");
+  hEl.classList.add("error");
+  mEl.classList.add("error");
+}
 
 let members=[];
 document.querySelectorAll("#fortressList"+tool+" .line").forEach(row=>{
 const nameEl=document.getElementById("name_"+row.id),secEl=document.getElementById("sec_"+row.id);
 const name=nameEl.value.trim(),sec=secEl.value.trim();
+
 if(name===""){errors.push("名前を入力してワン");nameEl.classList.add("error");}
-if(sec===""){errors.push("行軍を入力してワン");secEl.classList.add("error");}
+if(sec==="" || isNaN(parseInt(sec))){errors.push("行軍を入力してワン");secEl.classList.add("error");}
+
 members.push({name:name||"誰か",sec:parseInt(sec)});
 });
 
-if(errors.length){alert([...new Set(errors)].join("\n"));return;}
+if(errors.length){showErrors(errors);return;}
 
 let h=parseInt(hEl.value),m=parseInt(mEl.value),start=parseInt(document.getElementById("fortressStart"+tool).value);
 const maxSec=Math.max(...members.map(x=>x.sec));
