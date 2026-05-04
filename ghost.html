@@ -6,6 +6,12 @@
 
 <title>ぷてぃ研の連撃計算機</title>
 
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#007aff">
+<link rel="apple-touch-icon" href="IMG_0387.jpeg">
+
+<!-- OGP -->
 <meta property="og:title" content="ぷてぃ研の連撃計算機">
 <meta property="og:description" content="連撃の同時着弾タイミングを簡単計算🐶">
 <meta property="og:type" content="website">
@@ -52,7 +58,7 @@ input{padding:10px;border-radius:10px;border:1px solid #ddd;}
 #toast{
 position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
 background:#333;color:#fff;padding:10px 16px;border-radius:20px;
-opacity:0;transition:0.3s;pointer-events:none;z-index:999;
+opacity:0;transition:0.3s;pointer-events:none;
 }
 </style>
 </head>
@@ -190,7 +196,6 @@ let base=h*3600+m*60+s0;
 
 let out=members.map(x=>{
 let t=base+(maxSec-x.sec);
-
 if(utc) t-=9*3600;
 while(t<0) t+=24*3600;
 
