@@ -15,7 +15,8 @@ input{padding:10px;border-radius:10px;border:1px solid #ccc;}
 .name{flex:1;}
 .sec{width:80px;text-align:center;}
 .time{width:80px;text-align:center;}
-.btn{padding:10px 12px;border-radius:10px;color:#fff;margin-top:8px;border:none;}
+.btn{padding:12px;border-radius:10px;color:#fff;margin-top:10px;border:none;}
+.utcBtn{background:#555;}
 .result{background:#f1f1f4;padding:10px;border-radius:10px;white-space:pre-wrap;}
 .delete{color:red;}
 
@@ -25,19 +26,18 @@ input{padding:10px;border-radius:10px;border:1px solid #ccc;}
 .red .btn{background:#ff3b30;}
 .red .title{color:#ff3b30;}
 
-.secbtn{
+.startbtn{
 background:#e0e0e0;
 color:#333;
-border-radius:8px;
-padding:6px 10px;
+padding:10px 12px;
+border-radius:10px;
 border:none;
 }
-.secbtn.active{
+.startbtn.active{
 background:#007aff;
 color:#fff;
 }
-
-.red .secbtn.active{
+.red .startbtn.active{
 background:#ff3b30;
 }
 
@@ -78,14 +78,15 @@ return `
 
 <div>スタート秒</div>
 <div class="line">
-<button class="secbtn active" onclick="setStart(${id},0,this)">00秒</button>
-<button class="secbtn" onclick="setStart(${id},15,this)">15秒</button>
-<button class="secbtn" onclick="setStart(${id},30,this)">30秒</button>
-<button class="secbtn" onclick="setStart(${id},45,this)">45秒</button>
+<button class="startbtn active" onclick="setStart(${id},0,this)">00秒</button>
+<button class="startbtn" onclick="setStart(${id},15,this)">15秒</button>
+<button class="startbtn" onclick="setStart(${id},30,this)">30秒</button>
+<button class="startbtn" onclick="setStart(${id},45,this)">45秒</button>
 </div>
 <input type="hidden" id="start${id}" value="0">
 
-<button class="btn" onclick="calc(${id})">計算&コピーするワン</button>
+<button class="btn" onclick="calc(${id},false)">計算&コピーするワン</button>
+<button class="btn utcBtn" onclick="calc(${id},true)">UTCでコピーするワン</button>
 
 <div id="result${id}" class="result">ここに結果</div>
 </div>
@@ -114,7 +115,7 @@ document.getElementById("list"+id).appendChild(el);
 
 function setStart(id,val,btn){
 document.getElementById("start"+id).value=val;
-btn.parentNode.querySelectorAll(".secbtn").forEach(b=>b.classList.remove("active"));
+btn.parentNode.querySelectorAll(".startbtn").forEach(b=>b.classList.remove("active"));
 btn.classList.add("active");
 }
 
@@ -126,7 +127,7 @@ t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,1500);
 }
 
-function calc(id){
+function calc(id,isUTC){
 let h=parseInt(document.getElementById("h"+id).value);
 let m=parseInt(document.getElementById("m"+id).value);
 let start=parseInt(document.getElementById("start"+id).value);
@@ -155,10 +156,18 @@ let base=h*3600+m*60+start;
 
 let out=members.map(x=>{
 let t=base+(maxSec-x.sec);
+
+if(isUTC){
+t -= 9*3600;
+}
+
+while(t<0)t+=86400;
+
 let hh=Math.floor(t/3600)%24;
 let mm=Math.floor((t%3600)/60);
 let ss=t%60;
-return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+
+return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${isUTC?" UTC":""}`;
 });
 
 let text=out.join("\n");
