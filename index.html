@@ -1,10 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>ぷてぃ研の連撃計算</title>
+<script>
+if(sessionStorage.getItem("skipSplash")==="1"){
+  document.documentElement.classList.add("skipSplash");
+}
+</script>
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -115,6 +120,11 @@ justify-content:center;
 z-index:9999;
 transition:opacity .4s;
 }
+
+.skipSplash #splash{
+display:none!important;
+}
+
 #splash img{
 width:120px;
 height:120px;
