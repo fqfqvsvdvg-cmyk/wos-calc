@@ -57,7 +57,7 @@ white-space:pre-wrap;
 .red .btn{background:#ff3b30;}
 .red .title{color:#ff3b30;}
 
-/* スタート秒（サイズ統一版） */
+/* スタート秒 */
 .startbtn{
 background:#e0e0e0;
 color:#333;
@@ -158,6 +158,12 @@ el.innerHTML=`
 
 document.getElementById("list"+id).appendChild(el);
 }
+
+/* ⭐ 初期2人分ここ */
+addRow(1);
+addRow(1);
+addRow(2);
+addRow(2);
 
 function setStart(id,val,btn){
 document.getElementById("start"+id).value=val;
