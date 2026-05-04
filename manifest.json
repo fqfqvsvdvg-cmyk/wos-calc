@@ -1,15 +1,15 @@
 {
   "name": "ぷてぃ研の連撃計算機",
   "short_name": "ぷてぃ連撃",
-  "start_url": "/wos-calc/ghost.html",
+  "start_url": "/wos-calc/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007aff",
   "icons": [
     {
-      "src": "IMG_0387.jpeg",
+      "src": "https://raw.githubusercontent.com/fqfqvsvdvg-cmyk/wos-calc/refs/heads/main/E41A3360-3F58-47D4-A317-EA0B585DA76A.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
     }
   ]
 }
