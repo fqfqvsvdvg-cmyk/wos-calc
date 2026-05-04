@@ -3,176 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🐶40秒起点 集結時間計算機🐶</title>
+<title>砦・霜竜 連撃計算機</title>
 
 <style>
 body{font-family:-apple-system;background:#f5f5f7;margin:0;padding:16px;}
 h1{text-align:center;font-size:22px;margin-bottom:16px;}
-.section{margin-bottom:30px;}
-.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:14px;}
-.title{font-size:18px;font-weight:bold;margin-bottom:8px;}
-
-.row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
-.line{display:flex;gap:6px;align-items:center;}
-
-input{padding:10px;border-radius:10px;border:1px solid #ddd;}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;}
+.title{font-weight:bold;margin-bottom:10px;}
+.line{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+input{padding:10px;border-radius:10px;border:1px solid #ccc;}
 .name{flex:1;}
-.sec{width:60px;text-align:center;}
-
-.btn{padding:6px;border-radius:8px;border:none;flex:1;}
-.delete{color:#ff3b30;width:40px;}
-
-.drag{cursor:grab;font-size:18px;}
-
-.mainBtn{width:100%;padding:12px;border-radius:12px;border:none;color:#fff;font-weight:bold;}
-.add{width:100%;padding:12px;border-radius:12px;border:none;font-weight:bold;}
-
-.result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;}
-
-/* メイン（青） */
-.blue .btn{background:#eaf2ff;color:#007aff;}
-.blue .btn.active{background:#007aff;color:#fff;}
-.blue .mainBtn{background:#007aff;}
-.blue .add{background:#eaf2ff;color:#007aff;}
-.blue .title{color:#007aff;}
-
-/* ゴースト（赤） */
-.red .btn{background:#ffecec;color:#ff3b30;}
-.red .btn.active{background:#ff3b30;color:#fff;}
-.red .mainBtn{background:#ff3b30;}
-.red .add{background:#ffecec;color:#ff3b30;}
-.red .title{color:#ff3b30;}
+.sec{width:80px;text-align:center;}
+.time{width:80px;text-align:center;}
+.btn{padding:12px;border-radius:10px;background:#007aff;color:#fff;text-align:center;margin-top:10px;}
+.result{background:#f1f1f4;padding:10px;border-radius:10px;white-space:pre-wrap;}
+.delete{color:red;}
 </style>
 </head>
 
 <body>
 
-<h1>🐶40秒起点 集結時間計算機🐶</h1>
+<h1>🐶砦・霜竜 連撃計算機🐶</h1>
 
 <div id="app"></div>
 
 <script>
-function createTool(id,name,color){
-  return `
-  <div class="section ${color}">
-    <div class="title">${name}</div>
+function createBlock(id,name){
+return `
+<div class="card">
+<div class="title">${name}</div>
 
-    <div class="card" id="list${id}"></div>
+<div id="list${id}"></div>
 
-    <button class="add" onclick="addRow(${id})">集結主を追加するワン</button>
+<div class="btn" onclick="addRow(${id})">追加</div>
 
-    <div class="card">
-      集結時間
-      <input id="time${id}" placeholder="例 21:00">
-    </div>
+<br>
+<div>着弾時間</div>
+<div class="line">
+<input id="h${id}" class="time" placeholder="時">
+:
+<input id="m${id}" class="time" placeholder="分">
+</div>
 
-    <div class="card">
-      <button class="mainBtn" onclick="calc(${id})">計算&コピーするワン</button>
-    </div>
+<div class="btn" onclick="calc(${id})">計算&コピー</div>
 
-    <div class="card">
-      <div class="result" id="result${id}">ここに計算結果が出るワン</div>
-    </div>
-  </div>
-  `;
+<div id="result${id}" class="result">ここに結果</div>
+</div>
+`;
 }
 
 document.getElementById("app").innerHTML =
-  createTool(1,"メイン集結","blue") +
-  createTool(2,"ゴースト集結","red");
+createBlock(1,"連撃①") +
+createBlock(2,"連撃②");
 
-let dragSrc=null;
+function addRow(id){
+const el=document.createElement("div");
+const rid=Date.now()+Math.random();
 
-function addRow(tool){
-  const id=Date.now()+Math.random();
+el.className="line";
+el.id="r"+rid;
 
-  const el=document.createElement("div");
-  el.className="row";
-  el.id=`${tool}_${id}`;
-  el.draggable=true;
+el.innerHTML=`
+<input class="name" placeholder="名前" id="n${rid}">
+<input class="sec" placeholder="秒" id="s${rid}">
+<button class="delete" onclick="this.parentNode.remove()">✕</button>
+`;
 
-  el.ondragstart=e=>dragSrc=el;
-  el.ondragover=e=>e.preventDefault();
-  el.ondrop=e=>{
-    e.preventDefault();
-    if(dragSrc!==el){
-      el.parentNode.insertBefore(dragSrc,el);
-    }
-  };
-
-  el.innerHTML=`
-    <div class="line">
-      <span class="drag">≡</span>
-      <input class="name" placeholder="名前" id="n${tool}_${id}">
-      <input class="sec" id="s${tool}_${id}" value="36">
-      <button class="delete" onclick="this.parentNode.parentNode.remove()">✕</button>
-    </div>
-
-    <div class="line">
-      <button class="btn" onclick="setSec('${tool}_${id}',30,this)">30</button>
-      <button class="btn" onclick="setSec('${tool}_${id}',32,this)">32</button>
-      <button class="btn active" onclick="setSec('${tool}_${id}',36,this)">36</button>
-      <button class="btn" onclick="setSec('${tool}_${id}',39,this)">39</button>
-      <button class="btn" onclick="setSec('${tool}_${id}',43,this)">43</button>
-    </div>
-  `;
-
-  document.getElementById(`list${tool}`).appendChild(el);
-}
-
-function setSec(id,val,btn){
-  document.getElementById("s"+id).value=val;
-  const row=document.getElementById(id);
-  row.querySelectorAll(".btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
+document.getElementById("list"+id).appendChild(el);
 }
 
 function pad(n){return String(n).padStart(2,'0')}
 
-function calc(tool){
-  const timeInput=document.getElementById("time"+tool).value.trim();
+function calc(id){
+let h=parseInt(document.getElementById("h"+id).value);
+let m=parseInt(document.getElementById("m"+id).value);
 
-  if(!timeInput){
-    alert("集結時間を入力してワン");
-    return;
-  }
-
-  const [h,m]=timeInput.split(":").map(Number);
-
-  let out=[];
-
-  document.querySelectorAll(`#list${tool} .row`).forEach(row=>{
-    const id=row.id;
-
-    let name=document.getElementById("n"+id).value || "誰か";
-    let sec=parseInt(document.getElementById("s"+id).value);
-
-    let s=40-sec;
-    let hh=h, mm=m;
-
-    if(s<0){ s+=60; mm--; }
-    if(mm<0){ mm+=60; hh--; }
-
-    let total = hh*3600 + mm*60 + s;
-
-    out.push({
-      text:`${name} → ${pad(hh)}:${pad(mm)}:${pad(s)}`,
-      time: total
-    });
-  });
-
-  out.sort((a,b)=>a.time-b.time);
-
-  let text=out.map(x=>x.text).join("\n");
-
-  document.getElementById("result"+tool).textContent =
-    text || "集結主を追加してワン";
-
-  navigator.clipboard.writeText(text);
+if(isNaN(h)||isNaN(m)){
+alert("時間を入力してワン");
+return;
 }
 
-addRow(1);
-addRow(2);
+let members=[];
+
+document.querySelectorAll("#list"+id+" .line").forEach(row=>{
+const rid=row.id.replace("r","");
+const name=document.getElementById("n"+rid).value||"誰か";
+const sec=parseInt(document.getElementById("s"+rid).value);
+if(!isNaN(sec)) members.push({name,sec});
+});
+
+if(!members.length){
+document.getElementById("result"+id).textContent="メンバー入力してワン";
+return;
+}
+
+const maxSec=Math.max(...members.map(x=>x.sec));
+let base=h*3600+m*60;
+
+let out=members.map(x=>{
+let t=base+(maxSec-x.sec);
+let hh=Math.floor(t/3600)%24;
+let mm=Math.floor((t%3600)/60);
+let ss=t%60;
+return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+});
+
+let text=out.join("\n");
+
+document.getElementById("result"+id).textContent=text;
+navigator.clipboard.writeText(text);
+}
 </script>
 
 </body>
