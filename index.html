@@ -1,264 +1,321 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>砦・霜竜 連撃計算機</title>
+<title>ぷてぃ研の連撃計算機</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#007aff">
+<link rel="apple-touch-icon" href="IMG_0387.jpeg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta property="og:title" content="ぷてぃ研の連撃計算機">
+<meta property="og:description" content="通常連撃・40秒起点・砦霜竜用を簡単計算🐶">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/ghost.html">
+<meta property="og:image" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/IMG_0387.jpeg">
 
 <style>
 body{font-family:-apple-system;background:#f5f5f7;margin:0;padding:16px;}
 h1{text-align:center;font-size:22px;margin-bottom:16px;}
-
-.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;}
+.tab{flex:1;padding:12px;border:none;border-radius:12px;background:#e9e9ed;font-weight:bold;color:#555;}
+.tab.active{background:#007aff;color:#fff;}
+.mode{display:none;}
+.mode.active{display:block;}
+.section,.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;}
 .title{font-weight:bold;margin-bottom:10px;}
-
 .line{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
-
-input{
-padding:10px;
-border-radius:10px;
-border:1px solid #ccc;
-}
-
-/* ❗エラー時 */
-.error{
-border:2px solid #ff3b30 !important;
-background:#fff0f0;
-}
-
+input{padding:10px;border-radius:10px;border:1px solid #ccc;}
+.error{border:2px solid #ff3b30!important;background:#fff0f0;}
 .name{flex:1;}
-.sec{width:80px;text-align:center;}
-.time{width:80px;text-align:center;}
-
-.btn{
-padding:12px;
-border-radius:10px;
-color:#fff;
-border:none;
-font-weight:bold;
-text-align:center;
-}
-
-.utcBtn{background:#555;}
-
-.result{
-background:#f1f1f4;
-padding:10px;
-border-radius:10px;
-white-space:pre-wrap;
-}
-
+.sec,.time,.timeMin{width:80px;text-align:center;}
+.btn{padding:12px;border-radius:10px;color:#fff;border:none;font-weight:bold;text-align:center;}
+.utcBtn{background:#555!important;}
+.add{width:100%;}
+.result{background:#f1f1f4;padding:10px;border-radius:10px;white-space:pre-wrap;}
 .delete{color:red;}
-
 .blue .btn{background:#007aff;}
 .blue .title{color:#007aff;}
-
 .red .btn{background:#ff3b30;}
 .red .title{color:#ff3b30;}
-
-.startbtn{
-background:#e0e0e0;
-color:#333;
-padding:12px;
-border-radius:10px;
-border:none;
-font-weight:bold;
-min-width:70px;
-text-align:center;
+.smallbtn,.startbtn{
+background:#e0e0e0;color:#333;padding:12px;border-radius:10px;border:none;font-weight:bold;min-width:70px;text-align:center;
 }
-
-.startbtn.active{
-background:#007aff;
-color:#fff;
-}
-
-.red .startbtn.active{
-background:#ff3b30;
-}
-
-#toast{
-position:fixed;
-bottom:40px;
-left:50%;
-transform:translateX(-50%);
-background:#333;
-color:#fff;
-padding:10px 16px;
-border-radius:20px;
-opacity:0;
-transition:.3s;
-}
+.smallbtn.active,.startbtn.active{background:#007aff;color:#fff;}
+.red .smallbtn.active,.red .startbtn.active{background:#ff3b30;color:#fff;}
+#toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 16px;border-radius:20px;opacity:0;transition:.3s;z-index:999;}
 </style>
 </head>
 
 <body>
+<h1>🐶ぷてぃ研の連撃計算機🐶</h1>
 
-<h1>🐶砦・霜竜 連撃計算機🐶</h1>
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('normal',this)">通常連撃</button>
+  <button class="tab" onclick="switchTab('forty',this)">40秒起点</button>
+  <button class="tab" onclick="switchTab('fortress',this)">砦・霜竜</button>
+</div>
 
-<div id="app"></div>
+<div id="normal" class="mode active"></div>
+<div id="forty" class="mode"></div>
+<div id="fortress" class="mode"></div>
 <div id="toast">コピーしたワン！</div>
 
 <script>
-function createBlock(id,name,color){
+function switchTab(id,btn){
+  document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function pad(n){return String(n).padStart(2,"0")}
+function showToast(){const t=document.getElementById("toast");t.style.opacity=1;setTimeout(()=>t.style.opacity=0,1500);}
+function copyText(text,resultId){document.getElementById(resultId).textContent=text;navigator.clipboard.writeText(text);showToast();}
+function setActive(btn,cls){btn.parentNode.querySelectorAll(cls).forEach(b=>b.classList.remove("active"));btn.classList.add("active");}
+function setHidden(id,val,btn,cls){document.getElementById(id).value=val;setActive(btn,cls);}
+function setSec(rowId,val,btn){document.getElementById("sec_"+rowId).value=val;setActive(btn,".smallbtn");}
+
+/* 通常連撃 */
+function normalTool(id,name,color){
 return `
-<div class="card ${color}">
+<div class="section ${color}">
 <div class="title">${name}</div>
-
-<div id="list${id}"></div>
-
-<button class="btn" onclick="addRow(${id})">集結主を追加するワン</button>
-
-<br>
+<div id="normalList${id}"></div>
+<button class="btn add" onclick="addNormalRow(${id})">集結主を追加するワン</button>
 
 <div>基準時間（例 21:00）</div>
 <div class="line">
-<input id="h${id}" class="time" placeholder="時">
+<button class="smallbtn active" onclick="setHidden('normalHour${id}',21,this,'.smallbtn')">21</button>
+<button class="smallbtn" onclick="setHidden('normalHour${id}',22,this,'.smallbtn')">22</button>
+<button class="smallbtn" onclick="setHidden('normalHour${id}',23,this,'.smallbtn')">23</button>
+<button class="smallbtn" onclick="setHidden('normalHour${id}',24,this,'.smallbtn')">24</button>
+<button class="smallbtn" onclick="setHidden('normalHour${id}',1,this,'.smallbtn')">1</button>
 :
-<input id="m${id}" class="time" placeholder="分">
+<input id="normalMin${id}" class="timeMin" placeholder="00〜59">
+</div>
+<input type="hidden" id="normalHour${id}" value="21">
+
+<div>スタート秒</div>
+<div class="line">
+<button class="startbtn active" onclick="setHidden('normalStart${id}',0,this,'.startbtn')">00秒</button>
+<button class="startbtn" onclick="setHidden('normalStart${id}',30,this,'.startbtn')">30秒</button>
+</div>
+<input type="hidden" id="normalStart${id}" value="0">
+
+<div class="line">
+<button class="btn" onclick="calcNormal(${id},false)">計算&コピーするワン</button>
+<button class="btn utcBtn" onclick="calcNormal(${id},true)">UTCでコピーするワン</button>
+</div>
+<div id="normalResult${id}" class="result">ここに計算結果が出るワン</div>
+</div>`;
+}
+
+function addNormalRow(tool){
+const rid="n_"+tool+"_"+Date.now()+Math.random();
+const el=document.createElement("div");el.className="line";el.id=rid;
+el.innerHTML=`
+<input class="name" placeholder="名前" id="name_${rid}">
+<input class="sec" id="sec_${rid}" value="36">
+<button class="delete" onclick="this.parentNode.remove()">✕</button>
+<div class="line">
+<button class="smallbtn" onclick="setSec('${rid}',30,this)">30</button>
+<button class="smallbtn" onclick="setSec('${rid}',32,this)">32</button>
+<button class="smallbtn active" onclick="setSec('${rid}',36,this)">36</button>
+<button class="smallbtn" onclick="setSec('${rid}',39,this)">39</button>
+<button class="smallbtn" onclick="setSec('${rid}',43,this)">43</button>
+</div>`;
+document.getElementById("normalList"+tool).appendChild(el);
+}
+
+function calcNormal(tool,utc){
+let h=parseInt(document.getElementById("normalHour"+tool).value);
+let m=parseInt(document.getElementById("normalMin"+tool).value);
+let s0=parseInt(document.getElementById("normalStart"+tool).value);
+if(isNaN(m)||m<0||m>59){alert("分は0〜59で入力してワン");return;}
+
+let members=[];
+document.querySelectorAll("#normalList"+tool+" > .line").forEach(row=>{
+const name=document.getElementById("name_"+row.id).value||"誰か";
+const sec=parseInt(document.getElementById("sec_"+row.id).value);
+if(!isNaN(sec))members.push({name,sec});
+});
+if(!members.length){copyText("集結主を追加してワン","normalResult"+tool);return;}
+
+const maxSec=Math.max(...members.map(x=>x.sec));
+let base=h*3600+m*60+s0;
+members.forEach(x=>{x.time=base+(maxSec-x.sec);if(utc)x.time-=9*3600;while(x.time<0)x.time+=86400;});
+members.sort((a,b)=>a.time-b.time);
+
+let text=members.map(x=>{
+let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
+return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
+}).join("\n");
+copyText(text,"normalResult"+tool);
+}
+
+/* 40秒起点 */
+function fortyTool(id,name,color){
+return `
+<div class="section ${color}">
+<div class="title">${name}</div>
+<div id="fortyList${id}"></div>
+<button class="btn add" onclick="addFortyRow(${id})">集結主を追加するワン</button>
+
+<div>集結時間（例 21:00）</div>
+<div class="line">
+<button class="smallbtn active" onclick="setHidden('fortyHour${id}',21,this,'.smallbtn')">21</button>
+<button class="smallbtn" onclick="setHidden('fortyHour${id}',22,this,'.smallbtn')">22</button>
+<button class="smallbtn" onclick="setHidden('fortyHour${id}',23,this,'.smallbtn')">23</button>
+<button class="smallbtn" onclick="setHidden('fortyHour${id}',24,this,'.smallbtn')">24</button>
+<button class="smallbtn" onclick="setHidden('fortyHour${id}',1,this,'.smallbtn')">1</button>
+:
+<input id="fortyMin${id}" class="timeMin" placeholder="00〜59">
+</div>
+<input type="hidden" id="fortyHour${id}" value="21">
+
+<div class="line">
+<button class="btn" onclick="calcForty(${id},false)">計算&コピーするワン</button>
+<button class="btn utcBtn" onclick="calcForty(${id},true)">UTCでコピーするワン</button>
+</div>
+<div id="fortyResult${id}" class="result">ここに計算結果が出るワン</div>
+</div>`;
+}
+
+function addFortyRow(tool){
+const rid="f_"+tool+"_"+Date.now()+Math.random();
+const el=document.createElement("div");el.className="line";el.id=rid;
+el.innerHTML=`
+<input class="name" placeholder="名前" id="name_${rid}">
+<input class="sec" id="sec_${rid}" value="36">
+<button class="delete" onclick="this.parentNode.remove()">✕</button>
+<div class="line">
+<button class="smallbtn" onclick="setSec('${rid}',30,this)">30</button>
+<button class="smallbtn" onclick="setSec('${rid}',32,this)">32</button>
+<button class="smallbtn active" onclick="setSec('${rid}',36,this)">36</button>
+<button class="smallbtn" onclick="setSec('${rid}',39,this)">39</button>
+<button class="smallbtn" onclick="setSec('${rid}',43,this)">43</button>
+</div>`;
+document.getElementById("fortyList"+tool).appendChild(el);
+}
+
+function calcForty(tool,utc){
+let h=parseInt(document.getElementById("fortyHour"+tool).value);
+let m=parseInt(document.getElementById("fortyMin"+tool).value);
+if(isNaN(m)||m<0||m>59){alert("分は0〜59で入力してワン");return;}
+
+let out=[];
+document.querySelectorAll("#fortyList"+tool+" > .line").forEach(row=>{
+const name=document.getElementById("name_"+row.id).value||"誰か";
+const sec=parseInt(document.getElementById("sec_"+row.id).value);
+if(isNaN(sec))return;
+let s=40-sec,hh=h,mm=m;
+if(s<0){s+=60;mm--;}
+if(mm<0){mm+=60;hh--;}
+if(hh<0)hh+=24;
+let t=hh*3600+mm*60+s;
+if(utc)t-=9*3600;while(t<0)t+=86400;
+out.push({name,time:t});
+});
+out.sort((a,b)=>a.time-b.time);
+let text=out.map(x=>{
+let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
+return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
+}).join("\n");
+copyText(text||"集結主を追加してワン","fortyResult"+tool);
+}
+
+/* 砦・霜竜 */
+function fortressBlock(id,name,color){
+return `
+<div class="section ${color}">
+<div class="title">${name}</div>
+<div id="fortressList${id}"></div>
+<button class="btn add" onclick="addFortressRow(${id})">集結主を追加するワン</button>
+
+<div>基準時間（例 21:00）</div>
+<div class="line">
+<input id="fortressH${id}" class="time" placeholder="時">
+:
+<input id="fortressM${id}" class="time" placeholder="分">
 </div>
 
 <div>スタート秒</div>
 <div class="line">
-<button class="startbtn active" onclick="setStart(${id},0,this)">00秒</button>
-<button class="startbtn" onclick="setStart(${id},15,this)">15秒</button>
-<button class="startbtn" onclick="setStart(${id},30,this)">30秒</button>
-<button class="startbtn" onclick="setStart(${id},45,this)">45秒</button>
+<button class="startbtn active" onclick="setHidden('fortressStart${id}',0,this,'.startbtn')">00秒</button>
+<button class="startbtn" onclick="setHidden('fortressStart${id}',15,this,'.startbtn')">15秒</button>
+<button class="startbtn" onclick="setHidden('fortressStart${id}',30,this,'.startbtn')">30秒</button>
+<button class="startbtn" onclick="setHidden('fortressStart${id}',45,this,'.startbtn')">45秒</button>
 </div>
-<input type="hidden" id="start${id}" value="0">
+<input type="hidden" id="fortressStart${id}" value="0">
 
 <div class="line">
-<button class="btn" onclick="calc(${id},false)">計算&コピーするワン</button>
-<button class="btn utcBtn" onclick="calc(${id},true)">UTCでコピーするワン</button>
+<button class="btn" onclick="calcFortress(${id},false)">計算&コピーするワン</button>
+<button class="btn utcBtn" onclick="calcFortress(${id},true)">UTCでコピーするワン</button>
 </div>
-
-<div id="result${id}" class="result">ここに結果</div>
-</div>
-`;
+<div id="fortressResult${id}" class="result">ここに結果</div>
+</div>`;
 }
 
-document.getElementById("app").innerHTML =
-createBlock(1,"連撃①","blue") +
-createBlock(2,"連撃②","red");
-
-function addRow(id){
-const el=document.createElement("div");
-const rid=Date.now()+Math.random();
-
-el.className="line";
-el.id="r"+rid;
-
+function addFortressRow(tool){
+const rid="r"+Date.now()+Math.random();
+const el=document.createElement("div");el.className="line";el.id=rid;
 el.innerHTML=`
-<input class="name" placeholder="名前" id="n${rid}">
-<input class="sec" placeholder="秒" id="s${rid}">
-<button class="delete" onclick="this.parentNode.remove()">✕</button>
-`;
-
-document.getElementById("list"+id).appendChild(el);
+<input class="name" placeholder="名前" id="name_${rid}">
+<input class="sec" placeholder="秒" id="sec_${rid}">
+<button class="delete" onclick="this.parentNode.remove()">✕</button>`;
+document.getElementById("fortressList"+tool).appendChild(el);
 }
 
-/* 初期2人 */
-addRow(1);addRow(1);
-addRow(2);addRow(2);
-
-function setStart(id,val,btn){
-document.getElementById("start"+id).value=val;
-btn.parentNode.querySelectorAll(".startbtn").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-}
-
-function pad(n){return String(n).padStart(2,'0')}
-
-function showToast(){
-const t=document.getElementById("toast");
-t.style.opacity=1;
-setTimeout(()=>t.style.opacity=0,1500);
-}
-
-function clearErrors(id){
-document.querySelectorAll("#list"+id+" input").forEach(i=>i.classList.remove("error"));
-document.getElementById("h"+id).classList.remove("error");
-document.getElementById("m"+id).classList.remove("error");
-}
-
-function calc(id,isUTC){
-
-clearErrors(id);
-
-let h=document.getElementById("h"+id);
-let m=document.getElementById("m"+id);
-let start=parseInt(document.getElementById("start"+id).value);
+function calcFortress(tool,utc){
+const hEl=document.getElementById("fortressH"+tool),mEl=document.getElementById("fortressM"+tool);
+document.querySelectorAll("#fortressList"+tool+" input").forEach(i=>i.classList.remove("error"));
+hEl.classList.remove("error");mEl.classList.remove("error");
 
 let errors=[];
+if(hEl.value.trim()===""||mEl.value.trim()===""){errors.push("基準時間を入力してワン");hEl.classList.add("error");mEl.classList.add("error");}
 
-/* 基準時間チェック */
-if(h.value.trim()==="" || m.value.trim()===""){
-errors.push("基準時間を入力してワン");
-h.classList.add("error");
-m.classList.add("error");
-}
-
-/* メンバー */
 let members=[];
-
-document.querySelectorAll("#list"+id+" .line").forEach(row=>{
-const rid=row.id.replace("r","");
-const nameEl=document.getElementById("n"+rid);
-const secEl=document.getElementById("s"+rid);
-
-const name=nameEl.value.trim();
-const sec=secEl.value.trim();
-
-if(name===""){
-errors.push("名前を入力してワン");
-nameEl.classList.add("error");
-}
-
-if(sec===""){
-errors.push("行軍を入力してワン");
-secEl.classList.add("error");
-}
-
-members.push({
-name:name||"誰か",
-sec:parseInt(sec)
-});
+document.querySelectorAll("#fortressList"+tool+" .line").forEach(row=>{
+const nameEl=document.getElementById("name_"+row.id),secEl=document.getElementById("sec_"+row.id);
+const name=nameEl.value.trim(),sec=secEl.value.trim();
+if(name===""){errors.push("名前を入力してワン");nameEl.classList.add("error");}
+if(sec===""){errors.push("行軍を入力してワン");secEl.classList.add("error");}
+members.push({name:name||"誰か",sec:parseInt(sec)});
 });
 
-if(errors.length){
-alert([...new Set(errors)].join("\n"));
-return;
-}
+if(errors.length){alert([...new Set(errors)].join("\n"));return;}
 
-let hh=parseInt(h.value);
-let mm=parseInt(m.value);
-
+let h=parseInt(hEl.value),m=parseInt(mEl.value),start=parseInt(document.getElementById("fortressStart"+tool).value);
 const maxSec=Math.max(...members.map(x=>x.sec));
-let base=hh*3600+mm*60+start;
+let base=h*3600+m*60+start;
 
-/* 計算 */
-members.forEach(x=>{
-x.time=base+(maxSec-x.sec);
-if(isUTC){x.time-=9*3600;}
-while(x.time<0)x.time+=86400;
-});
-
-/* ⭐ 並び替え（早い順） */
+members.forEach(x=>{x.time=base+(maxSec-x.sec);if(utc)x.time-=9*3600;while(x.time<0)x.time+=86400;});
 members.sort((a,b)=>a.time-b.time);
 
-let out=members.map(x=>{
-let h=Math.floor(x.time/3600)%24;
-let m=Math.floor((x.time%3600)/60);
-let s=x.time%60;
-return `${x.name} → ${pad(h)}:${pad(m)}:${pad(s)}${isUTC?" UTC":""}`;
-});
+let text=members.map(x=>{
+let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
+return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
+}).join("\n");
 
-let text=out.join("\n");
-
-document.getElementById("result"+id).textContent=text;
-navigator.clipboard.writeText(text);
-showToast();
+copyText(text,"fortressResult"+tool);
 }
-</script>
 
+/* 初期表示 */
+document.getElementById("normal").innerHTML=
+normalTool(1,"メイン集結","blue")+normalTool(2,"ゴースト集結","red");
+document.getElementById("forty").innerHTML=
+fortyTool(1,"メイン集結","blue")+fortyTool(2,"ゴースト集結","red");
+document.getElementById("fortress").innerHTML=
+fortressBlock(1,"連撃①","blue")+fortressBlock(2,"連撃②","red");
+
+addNormalRow(1);addNormalRow(2);
+addFortyRow(1);addFortyRow(2);
+addFortressRow(1);addFortressRow(1);
+addFortressRow(2);addFortressRow(2);
+</script>
 </body>
 </html>
