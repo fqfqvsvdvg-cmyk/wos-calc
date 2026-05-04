@@ -14,7 +14,17 @@ h1{text-align:center;font-size:22px;margin-bottom:16px;}
 
 .line{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
 
-input{padding:10px;border-radius:10px;border:1px solid #ccc;}
+input{
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+/* ❗エラー時 */
+.error{
+border:2px solid #ff3b30 !important;
+background:#fff0f0;
+}
 
 .name{flex:1;}
 .sec{width:80px;text-align:center;}
@@ -164,30 +174,48 @@ t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,1500);
 }
 
+function clearErrors(id){
+document.querySelectorAll("#list"+id+" input").forEach(i=>i.classList.remove("error"));
+document.getElementById("h"+id).classList.remove("error");
+document.getElementById("m"+id).classList.remove("error");
+}
+
 function calc(id,isUTC){
-let h=document.getElementById("h"+id).value.trim();
-let m=document.getElementById("m"+id).value.trim();
+
+clearErrors(id);
+
+let h=document.getElementById("h"+id);
+let m=document.getElementById("m"+id);
 let start=parseInt(document.getElementById("start"+id).value);
 
 let errors=[];
 
 /* 基準時間チェック */
-if(h==="" || m===""){
+if(h.value.trim()==="" || m.value.trim()===""){
 errors.push("基準時間を入力してワン");
+h.classList.add("error");
+m.classList.add("error");
 }
 
-/* メンバーチェック */
+/* メンバー */
 let members=[];
+
 document.querySelectorAll("#list"+id+" .line").forEach(row=>{
 const rid=row.id.replace("r","");
-const name=document.getElementById("n"+rid).value.trim();
-const sec=document.getElementById("s"+rid).value.trim();
+const nameEl=document.getElementById("n"+rid);
+const secEl=document.getElementById("s"+rid);
+
+const name=nameEl.value.trim();
+const sec=secEl.value.trim();
 
 if(name===""){
 errors.push("名前を入力してワン");
+nameEl.classList.add("error");
 }
+
 if(sec===""){
 errors.push("行軍を入力してワン");
+secEl.classList.add("error");
 }
 
 members.push({
@@ -196,29 +224,32 @@ sec:parseInt(sec)
 });
 });
 
-/* エラーあれば全部表示 */
 if(errors.length){
-alert(errors.join("\n"));
+alert([...new Set(errors)].join("\n"));
 return;
 }
 
-h=parseInt(h);
-m=parseInt(m);
+let hh=parseInt(h.value);
+let mm=parseInt(m.value);
 
 const maxSec=Math.max(...members.map(x=>x.sec));
-let base=h*3600+m*60+start;
+let base=hh*3600+mm*60+start;
+
+/* 計算 */
+members.forEach(x=>{
+x.time=base+(maxSec-x.sec);
+if(isUTC){x.time-=9*3600;}
+while(x.time<0)x.time+=86400;
+});
+
+/* ⭐ 並び替え（早い順） */
+members.sort((a,b)=>a.time-b.time);
 
 let out=members.map(x=>{
-let t=base+(maxSec-x.sec);
-
-if(isUTC){ t-=9*3600; }
-while(t<0)t+=86400;
-
-let hh=Math.floor(t/3600)%24;
-let mm=Math.floor((t%3600)/60);
-let ss=t%60;
-
-return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${isUTC?" UTC":""}`;
+let h=Math.floor(x.time/3600)%24;
+let m=Math.floor((x.time%3600)/60);
+let s=x.time%60;
+return `${x.name} → ${pad(h)}:${pad(m)}:${pad(s)}${isUTC?" UTC":""}`;
 });
 
 let text=out.join("\n");
