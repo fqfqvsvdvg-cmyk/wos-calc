@@ -6,7 +6,7 @@ const CACHE_FILES = [
   "/wos-calc/",
   "/wos-calc/index.html",
   "/wos-calc/manifest.json",
-  "/wos-calc/PutyKen.png"
+  "/wos-calc/PutyKenMini.png"
 ];
 
 self.addEventListener("install", event => {
