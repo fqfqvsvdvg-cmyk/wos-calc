@@ -7,7 +7,7 @@
   "theme_color": "#007aff",
   "icons": [
     {
-      "src": "PutyKen.png",
+     "src": "/wos-calc/PutyKen.png",
       "sizes": "512x512",
       "type": "image/png"
     }
