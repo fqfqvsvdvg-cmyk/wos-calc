@@ -8,45 +8,88 @@
 <style>
 body{font-family:-apple-system;background:#f5f5f7;margin:0;padding:16px;}
 h1{text-align:center;font-size:22px;margin-bottom:16px;}
+
 .card{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;}
 .title{font-weight:bold;margin-bottom:10px;}
-.line{display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap;}
-input{padding:10px;border-radius:10px;border:1px solid #ccc;}
+
+.line{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+align-items:center;
+margin-bottom:8px;
+}
+
+input{
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
 .name{flex:1;}
 .sec{width:80px;text-align:center;}
 .time{width:80px;text-align:center;}
-.btn{padding:12px;border-radius:10px;color:#fff;margin-top:10px;border:none;}
+
+.btn{
+padding:12px;
+border-radius:10px;
+color:#fff;
+border:none;
+font-weight:bold;
+text-align:center;
+}
+
 .utcBtn{background:#555;}
-.result{background:#f1f1f4;padding:10px;border-radius:10px;white-space:pre-wrap;}
+
+.result{
+background:#f1f1f4;
+padding:10px;
+border-radius:10px;
+white-space:pre-wrap;
+}
+
 .delete{color:red;}
 
+/* 色分け */
 .blue .btn{background:#007aff;}
 .blue .title{color:#007aff;}
 
 .red .btn{background:#ff3b30;}
 .red .title{color:#ff3b30;}
 
+/* スタート秒（サイズ統一版） */
 .startbtn{
 background:#e0e0e0;
 color:#333;
-padding:10px 12px;
+padding:12px;
 border-radius:10px;
 border:none;
+font-weight:bold;
+min-width:70px;
+text-align:center;
 }
+
 .startbtn.active{
 background:#007aff;
 color:#fff;
 }
+
 .red .startbtn.active{
 background:#ff3b30;
 }
 
+/* コピー通知 */
 #toast{
-position:fixed;bottom:40px;left:50%;
+position:fixed;
+bottom:40px;
+left:50%;
 transform:translateX(-50%);
-background:#333;color:#fff;
-padding:10px 16px;border-radius:20px;
-opacity:0;transition:.3s;
+background:#333;
+color:#fff;
+padding:10px 16px;
+border-radius:20px;
+opacity:0;
+transition:.3s;
 }
 </style>
 </head>
@@ -69,6 +112,7 @@ return `
 <button class="btn" onclick="addRow(${id})">集結主を追加するワン</button>
 
 <br>
+
 <div>基準時間（例 21:00）</div>
 <div class="line">
 <input id="h${id}" class="time" placeholder="時">
@@ -85,8 +129,10 @@ return `
 </div>
 <input type="hidden" id="start${id}" value="0">
 
+<div class="line">
 <button class="btn" onclick="calc(${id},false)">計算&コピーするワン</button>
 <button class="btn utcBtn" onclick="calc(${id},true)">UTCでコピーするワン</button>
+</div>
 
 <div id="result${id}" class="result">ここに結果</div>
 </div>
