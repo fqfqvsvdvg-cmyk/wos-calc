@@ -1,6 +1,6 @@
 // =====【追加：オフライン対応（キャッシュ設定）】=====
 
-const CACHE_NAME = "puty-rengeki-v1";
+const CACHE_NAME = "puty-rengeki-v2";
 
 const CACHE_FILES = [
   "/wos-calc/",
