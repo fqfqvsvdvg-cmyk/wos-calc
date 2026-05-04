@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>ぷてぃ研の連撃計算機</title>
+<title>ぷてぃ研の連撃計算</title>
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -21,14 +21,14 @@
 
 <!-- OGP -->
 <meta property="og:title" content="ぷてぃ研の連撃計算機">
-<meta property="og:description" content="通常連撃・40秒起点・砦霜竜用を簡単計算🐶">
+<meta property="og:description" content="ホワサバの連撃を計算するワン🐶">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/index.html">
 <meta property="og:image" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/PutyKenMini.png">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ぷてぃ研の連撃計算機">
-<meta name="twitter:description" content="通常連撃・40秒起点・砦霜竜用を簡単計算🐶">
+<meta name="twitter:title" content="ぷてぃ研の連撃計算">
+<meta name="twitter:description" content="ホワサバの連撃を計算するワン🐶">
 <meta name="twitter:image" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/PutyKenMini.png">
 
 <style>
@@ -157,7 +157,7 @@ background:#ff3b30;
 </div>
 <!-- =====【ここまで追加】===== -->
 
-<h1>🐶ぷてぃ研の連撃計算機🐶</h1>
+<h1>🐶ぷてぃ研の連撃計算🐶</h1>
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('normal',this)">通常連撃</button>
@@ -483,11 +483,16 @@ if ("serviceWorker" in navigator) {
 
 // =====【追加：疑似スプラッシュ画面を閉じる】=====
 window.addEventListener("load",()=>{
+  if(sessionStorage.getItem("skipSplash")==="1"){
+    sessionStorage.removeItem("skipSplash");
+    document.getElementById("splash")?.classList.add("hide");
+    return;
+  }
+
   setTimeout(()=>{
     document.getElementById("splash")?.classList.add("hide");
   },900);
 });
-// =====【ここまで追加】=====
 
 // =====【名前だけ保存】=====
 function saveInputs(){
@@ -521,23 +526,16 @@ window.addEventListener("load", loadInputs);
 // =====【ここまで】=====
 
 function resetNames(){
-  if(confirm("名前だけリセットするワン？")){
+  if(confirm("リセットするワン？")){
     localStorage.removeItem("putyCalcNames");
-    location.reload();
-  }
-}
-
-function resetAll(){
-  if(confirm("全部リセットするワン？")){
-    localStorage.clear();
+    sessionStorage.setItem("skipSplash","1");
     location.reload();
   }
 }
 
 </script>
 
-<button class="resetBtn" onclick="resetNames()">名前だけリセットワン</button>
-<button class="resetBtn danger" onclick="resetAll()">全部リセットワン</button>
+<button class="resetBtn danger" onclick="resetNames()">リセットワン</button>
 
 </body>
 </html>
