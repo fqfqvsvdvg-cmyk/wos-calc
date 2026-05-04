@@ -12,19 +12,9 @@ h1{text-align:center;font-size:22px;margin-bottom:16px;}
 .card{background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;}
 .title{font-weight:bold;margin-bottom:10px;}
 
-.line{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-align-items:center;
-margin-bottom:8px;
-}
+.line{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
 
-input{
-padding:10px;
-border-radius:10px;
-border:1px solid #ccc;
-}
+input{padding:10px;border-radius:10px;border:1px solid #ccc;}
 
 .name{flex:1;}
 .sec{width:80px;text-align:center;}
@@ -50,14 +40,12 @@ white-space:pre-wrap;
 
 .delete{color:red;}
 
-/* 色分け */
 .blue .btn{background:#007aff;}
 .blue .title{color:#007aff;}
 
 .red .btn{background:#ff3b30;}
 .red .title{color:#ff3b30;}
 
-/* スタート秒 */
 .startbtn{
 background:#e0e0e0;
 color:#333;
@@ -78,7 +66,6 @@ color:#fff;
 background:#ff3b30;
 }
 
-/* コピー通知 */
 #toast{
 position:fixed;
 bottom:40px;
@@ -159,11 +146,9 @@ el.innerHTML=`
 document.getElementById("list"+id).appendChild(el);
 }
 
-/* ⭐ 初期2人分ここ */
-addRow(1);
-addRow(1);
-addRow(2);
-addRow(2);
+/* 初期2人 */
+addRow(1);addRow(1);
+addRow(2);addRow(2);
 
 function setStart(id,val,btn){
 document.getElementById("start"+id).value=val;
@@ -180,28 +165,45 @@ setTimeout(()=>t.style.opacity=0,1500);
 }
 
 function calc(id,isUTC){
-let h=parseInt(document.getElementById("h"+id).value);
-let m=parseInt(document.getElementById("m"+id).value);
+let h=document.getElementById("h"+id).value.trim();
+let m=document.getElementById("m"+id).value.trim();
 let start=parseInt(document.getElementById("start"+id).value);
 
-if(isNaN(h)||isNaN(m)){
-alert("時間を入力してワン");
-return;
+let errors=[];
+
+/* 基準時間チェック */
+if(h==="" || m===""){
+errors.push("基準時間を入力してワン");
 }
 
+/* メンバーチェック */
 let members=[];
-
 document.querySelectorAll("#list"+id+" .line").forEach(row=>{
 const rid=row.id.replace("r","");
-const name=document.getElementById("n"+rid).value||"誰か";
-const sec=parseInt(document.getElementById("s"+rid).value);
-if(!isNaN(sec)) members.push({name,sec});
+const name=document.getElementById("n"+rid).value.trim();
+const sec=document.getElementById("s"+rid).value.trim();
+
+if(name===""){
+errors.push("名前を入力してワン");
+}
+if(sec===""){
+errors.push("行軍を入力してワン");
+}
+
+members.push({
+name:name||"誰か",
+sec:parseInt(sec)
+});
 });
 
-if(!members.length){
-document.getElementById("result"+id).textContent="メンバー入力してワン";
+/* エラーあれば全部表示 */
+if(errors.length){
+alert(errors.join("\n"));
 return;
 }
+
+h=parseInt(h);
+m=parseInt(m);
 
 const maxSec=Math.max(...members.map(x=>x.sec));
 let base=h*3600+m*60+start;
@@ -209,10 +211,7 @@ let base=h*3600+m*60+start;
 let out=members.map(x=>{
 let t=base+(maxSec-x.sec);
 
-if(isUTC){
-t -= 9*3600;
-}
-
+if(isUTC){ t-=9*3600; }
 while(t<0)t+=86400;
 
 let hh=Math.floor(t/3600)%24;
