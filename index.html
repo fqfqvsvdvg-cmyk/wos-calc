@@ -419,6 +419,33 @@ addFortyRow(2);addFortyRow(2);
 
 addFortressRow(1);addFortressRow(1);
 addFortressRow(2);addFortressRow(2);
+
+function saveInputs(){
+  const data = {};
+  document.querySelectorAll("input").forEach(input=>{
+    if(input.id){
+      data[input.id] = input.value;
+    }
+  });
+  localStorage.setItem("putyCalcInputs", JSON.stringify(data));
+}
+
+function loadInputs(){
+  const saved = localStorage.getItem("putyCalcInputs");
+  if(!saved) return;
+
+  const data = JSON.parse(saved);
+  Object.keys(data).forEach(id=>{
+    const input = document.getElementById(id);
+    if(input){
+      input.value = data[id];
+    }
+  });
+}
+
+document.addEventListener("input", saveInputs);
+loadInputs();
+
 </script>
 </body>
 </html>
