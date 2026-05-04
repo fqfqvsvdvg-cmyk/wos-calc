@@ -18,6 +18,20 @@ input{padding:10px;border-radius:10px;border:1px solid #ccc;}
 .btn{padding:12px;border-radius:10px;background:#007aff;color:#fff;text-align:center;margin-top:10px;}
 .result{background:#f1f1f4;padding:10px;border-radius:10px;white-space:pre-wrap;}
 .delete{color:red;}
+
+#toast{
+position:fixed;
+bottom:40px;
+left:50%;
+transform:translateX(-50%);
+background:#333;
+color:#fff;
+padding:10px 16px;
+border-radius:20px;
+opacity:0;
+transition:.3s;
+pointer-events:none;
+}
 </style>
 </head>
 
@@ -26,6 +40,7 @@ input{padding:10px;border-radius:10px;border:1px solid #ccc;}
 <h1>🐶砦・霜竜 連撃計算機🐶</h1>
 
 <div id="app"></div>
+<div id="toast">コピーしたワン！</div>
 
 <script>
 function createBlock(id,name){
@@ -35,7 +50,7 @@ return `
 
 <div id="list${id}"></div>
 
-<div class="btn" onclick="addRow(${id})">追加</div>
+<div class="btn" onclick="addRow(${id})">集結主を追加するワン</div>
 
 <br>
 <div>着弾時間</div>
@@ -45,7 +60,7 @@ return `
 <input id="m${id}" class="time" placeholder="分">
 </div>
 
-<div class="btn" onclick="calc(${id})">計算&コピー</div>
+<div class="btn" onclick="calc(${id})">計算&コピーするワン</div>
 
 <div id="result${id}" class="result">ここに結果</div>
 </div>
@@ -73,6 +88,12 @@ document.getElementById("list"+id).appendChild(el);
 }
 
 function pad(n){return String(n).padStart(2,'0')}
+
+function showToast(){
+const t=document.getElementById("toast");
+t.style.opacity=1;
+setTimeout(()=>t.style.opacity=0,1500);
+}
 
 function calc(id){
 let h=parseInt(document.getElementById("h"+id).value);
@@ -112,6 +133,7 @@ let text=out.join("\n");
 
 document.getElementById("result"+id).textContent=text;
 navigator.clipboard.writeText(text);
+showToast();
 }
 </script>
 
