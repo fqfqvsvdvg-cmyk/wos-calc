@@ -9,6 +9,8 @@
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#007aff">
+
+<!-- ★ここ変更 -->
 <link rel="apple-touch-icon" href="PutyKen.png">
 
 <!-- iPhoneアプリ化 -->
@@ -17,15 +19,10 @@
 
 <!-- OGP -->
 <meta property="og:title" content="ぷてぃ研の連撃計算機">
-<meta property="og:description" content="通常連撃・40秒起点・砦霜竜用を簡単計算🐶">
+<meta property="og:description" content="連撃の同時着弾タイミングを簡単計算🐶">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/index.html">
-<meta property="og:image" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/PutyKen.png">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ぷてぃ研の連撃計算機">
-<meta name="twitter:description" content="通常連撃・40秒起点・砦霜竜用を簡単計算🐶">
-<meta name="twitter:image" content="https://fqfqvsvdvg-cmyk.github.io/wos-calc/PutyKen.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fqfqvsvdvg-cmyk/wos-calc/refs/heads/main/PutyKen.png">
 
 <style>
 body{font-family:-apple-system;background:#f5f5f7;margin:0;padding:16px;}
@@ -44,11 +41,11 @@ input{padding:10px;border-radius:10px;border:1px solid #ccc;box-sizing:border-bo
 .name{flex:1;}
 .sec{width:80px;text-align:center;}
 .timeMin{width:90px;text-align:center;}
-.btn{padding:12px;border-radius:10px;color:#fff;border:none;font-weight:bold;text-align:center;}
+.btn{padding:12px;border-radius:10px;color:#fff;border:none;font-weight:bold;}
 .utcBtn{background:#555!important;}
 .add{width:100%;margin-bottom:10px;}
 .result{background:#f1f1f4;padding:12px;border-radius:10px;white-space:pre-wrap;font-weight:bold;}
-.delete{color:red;border:none;border-radius:10px;padding:10px 16px;}
+.delete{color:red;border:none;border-radius:10px;padding:10px;}
 
 .blue .btn{background:#007aff;}
 .blue .title{color:#007aff;}
@@ -63,29 +60,11 @@ border:none;
 font-weight:bold;
 }
 
-.timeRow{
-display:grid;
-grid-template-columns:repeat(5,1fr) auto 92px;
-gap:6px;
-margin-bottom:10px;
-}
-
-.secBtns{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:8px;
-margin-bottom:10px;
-}
-
-.startBtns{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:8px;
-margin-bottom:10px;
-}
-
 .smallbtn.active,.startbtn.active{background:#007aff;color:#fff;}
 .red .smallbtn.active,.red .startbtn.active{background:#ff3b30;color:#fff;}
+
+.secBtns{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px;}
+.startBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
 
 #toast{
 position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
@@ -96,7 +75,6 @@ opacity:0;transition:.3s;
 </head>
 
 <body>
-
 <h1>🐶ぷてぃ研の連撃計算機🐶</h1>
 
 <div class="tabs">
@@ -108,7 +86,6 @@ opacity:0;transition:.3s;
 <div id="normal" class="mode active"></div>
 <div id="forty" class="mode"></div>
 <div id="fortress" class="mode"></div>
-
 <div id="toast">コピーしたワン！</div>
 
 <script>
@@ -120,40 +97,104 @@ btn.classList.add("active");
 }
 
 function pad(n){return String(n).padStart(2,"0")}
-function showToast(){let t=document.getElementById("toast");t.style.opacity=1;setTimeout(()=>t.style.opacity=0,1500);}
+function showToast(){const t=document.getElementById("toast");t.style.opacity=1;setTimeout(()=>t.style.opacity=0,1500);}
 function copyText(text,id){document.getElementById(id).textContent=text;navigator.clipboard.writeText(text);showToast();}
-function clearErrors(id){document.querySelectorAll("#"+id+" input").forEach(i=>i.classList.remove("error"));}
+
+function clearErrors(area){document.querySelectorAll("#"+area+" input").forEach(i=>i.classList.remove("error"));}
 
 function showErrors(errors){alert([...new Set(errors)].join("\n"));}
 
 /* ===== 通常連撃 ===== */
 function normalTool(id,name,color){
 return `
-<div class="section ${color}" id="normalBox${id}">
+<div class="section ${color}" id="nBox${id}">
 <div class="title">${name}</div>
-<div id="normalList${id}"></div>
-<button class="btn add" onclick="addNormalRow(${id})">集結主を追加するワン</button>
+<div id="nList${id}"></div>
+<button class="btn add" onclick="addN(${id})">集結主を追加するワン</button>
 
-<div>基準時間（例21:00）</div>
-<div class="line">
-<input id="normalH${id}" class="timeMin" placeholder="時">
+<div>基準時間（例 21:00）</div>
+<input id="nh${id}" class="timeMin" placeholder="時">
 :
-<input id="normalM${id}" class="timeMin" placeholder="分">
-</div>
+<input id="nm${id}" class="timeMin" placeholder="分">
 
-<div class="line wrap">
-<button class="btn" onclick="calcNormal(${id},false)">計算&コピーするワン</button>
-<button class="btn utcBtn" onclick="calcNormal(${id},true)">UTCでコピーするワン</button>
+<div>スタート秒</div>
+<div class="startBtns">
+<button class="startbtn active" onclick="setStart('ns${id}',0,this)">00秒</button>
+<button class="startbtn" onclick="setStart('ns${id}',15,this)">15秒</button>
+<button class="startbtn" onclick="setStart('ns${id}',30,this)">30秒</button>
+<button class="startbtn" onclick="setStart('ns${id}',45,this)">45秒</button>
 </div>
+<input type="hidden" id="ns${id}" value="0">
 
-<div id="normalResult${id}" class="result">ここに計算結果が出るワン</div>
+<button class="btn" onclick="calcN(${id},false)">計算&コピーするワン</button>
+<button class="btn utcBtn" onclick="calcN(${id},true)">UTCでコピーするワン</button>
+
+<div id="nr${id}" class="result">ここに計算結果が出るワン</div>
 </div>`;
 }
 
-function addNormalRow(tool){
-let id="n"+Date.now()+Math.random();
-let el=document.createElement("div");
-el.className="line";
-el.id=id;
+function addN(id){
+const rid="n"+Date.now();
+const el=document.createElement("div");
 el.innerHTML=`
-<input class="name" placeholder
+<div class="line">
+<input class="name" id="name_${rid}" placeholder="名前">
+<input class="sec" id="sec_${rid}" placeholder="秒">
+<button class="delete" onclick="this.parentNode.remove()">×</button>
+</div>`;
+document.getElementById("nList"+id).appendChild(el);
+}
+
+function calcN(id,utc){
+clearErrors("nBox"+id);
+
+let errors=[];
+let h=document.getElementById("nh"+id);
+let m=document.getElementById("nm"+id);
+
+if(h.value===""||m.value===""){errors.push("基準時間を入力してワン");h.classList.add("error");m.classList.add("error");}
+
+let members=[];
+document.querySelectorAll("#nList"+id+" .line").forEach(r=>{
+let n=document.getElementById("name_"+r.querySelector(".name").id.split("_")[1]);
+let s=document.getElementById("sec_"+r.querySelector(".sec").id.split("_")[1]);
+
+if(n.value===""){errors.push("名前を入力してワン");n.classList.add("error");}
+if(s.value===""){errors.push("行軍を入力してワン");s.classList.add("error");}
+
+members.push({name:n.value||"誰か",sec:parseInt(s.value)});
+});
+
+if(errors.length){showErrors(errors);return;}
+
+let max=Math.max(...members.map(x=>x.sec));
+let base=h.value*3600+m.value*60+parseInt(document.getElementById("ns"+id).value);
+
+members.forEach(x=>{
+x.time=base+(max-x.sec);
+if(utc)x.time-=9*3600;
+while(x.time<0)x.time+=86400;
+});
+
+members.sort((a,b)=>a.time-b.time);
+
+let text=members.map(x=>{
+let hh=Math.floor(x.time/3600)%24;
+let mm=Math.floor((x.time%3600)/60);
+let ss=x.time%60;
+return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
+}).join("\n");
+
+copyText(text,"nr"+id);
+}
+
+/* ===== 初期表示 ===== */
+document.getElementById("normal").innerHTML=
+normalTool(1,"メイン集結","blue")+normalTool(2,"ゴースト集結","red");
+
+/* ★最初から2人 */
+addN(1);addN(1);
+addN(2);addN(2);
+</script>
+</body>
+</html>
