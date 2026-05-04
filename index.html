@@ -474,6 +474,37 @@ window.addEventListener("load",()=>{
 });
 // =====【ここまで追加】=====
 
+// =====【名前だけ保存】=====
+function saveInputs(){
+  const data = {};
+  document.querySelectorAll("input.name").forEach(input=>{
+    if(input.id){
+      data[input.id] = input.value;
+    }
+  });
+  localStorage.setItem("putyCalcNames", JSON.stringify(data));
+}
+
+function loadInputs(){
+  const saved = localStorage.getItem("putyCalcNames");
+  if(!saved) return;
+
+  const data = JSON.parse(saved);
+  Object.keys(data).forEach(id=>{
+    const input = document.getElementById(id);
+    if(input){
+      input.value = data[id];
+    }
+  });
+}
+
+// 入力されたら保存（名前だけ）
+document.addEventListener("input", saveInputs);
+
+// 起動時に復元
+window.addEventListener("load", loadInputs);
+// =====【ここまで】=====
+
 </script>
 </body>
 </html>
