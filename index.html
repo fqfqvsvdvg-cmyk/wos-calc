@@ -1,5 +1,4 @@
-
-﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -243,11 +242,11 @@ return `
 <div class="section ${color}" id="normalBox${id}">
 <div class="title">${name}</div>
 <div id="normalList${id}"></div>
-<button class="btn add" onclick="addNormalRow(${id})">集結主を追加するワン</button>
+<button class="btn add" onclick="addNormalRow(${id})">集結主を追加</button>
 ${timeUI("normal",id)}
 <div class="line wrap">
-<button class="btn" onclick="calcNormal(${id},false)">計算&コピーするワン</button>
-<button class="btn utcBtn" onclick="calcNormal(${id},true)">UTCでコピーするワン</button>
+<button class="btn" onclick="calcNormal(${id},false)">計算&コピー</button>
+<button class="btn utcBtn" onclick="calcNormal(${id},true)">UTCでコピー</button>
 </div>
 <div id="normalResult${id}" class="result">ここに計算結果が出るワン</div>
 </div>`;
@@ -319,11 +318,11 @@ return `
 <div class="section ${color}" id="fortyBox${id}">
 <div class="title">${name}</div>
 <div id="fortyList${id}"></div>
-<button class="btn add" onclick="addFortyRow(${id})">集結主を追加するワン</button>
+<button class="btn add" onclick="addFortyRow(${id})">集結主を追加</button>
 ${timeUI("forty",id)}
 <div class="line wrap">
-<button class="btn" onclick="calcForty(${id},false)">計算&コピーするワン</button>
-<button class="btn utcBtn" onclick="calcForty(${id},true)">UTCでコピーするワン</button>
+<button class="btn" onclick="calcForty(${id},false)">計算&コピー</button>
+<button class="btn utcBtn" onclick="calcForty(${id},true)">UTCでコピー</button>
 </div>
 <div id="fortyResult${id}" class="result">ここに計算結果が出るワン</div>
 </div>`;
@@ -399,10 +398,10 @@ return `
 <div class="section ${color}" id="fortressBox${id}">
 <div class="title">${name}</div>
 <div id="fortressList${id}"></div>
-<button class="btn add" onclick="addFortressRow(${id})">集結主を追加するワン</button>
+<button class="btn add" onclick="addFortressRow(${id})">集結主を追加</button>
 
 <!-- ===== 集結時間選択（コピー時に表示） ===== -->
-<div style="margin-bottom:6px;">集結時間を選択</div>
+<div style="margin-bottom:6px;">集結時間</div>
 <div class="rallyBtns">
 <button class="startbtn active" onclick="setHidden('fortressRally${id}',1,this,'.startbtn')">1分集結</button>
 <button class="startbtn" onclick="setHidden('fortressRally${id}',3,this,'.startbtn')">3分集結</button>
@@ -428,8 +427,8 @@ return `
 <input type="hidden" id="fortressStart${id}" value="0">
 
 <div class="line wrap">
-<button class="btn" onclick="calcFortress(${id},false)">計算&コピーするワン</button>
-<button class="btn utcBtn" onclick="calcFortress(${id},true)">UTCでコピーするワン</button>
+<button class="btn" onclick="calcFortress(${id},false)">計算&コピー</button>
+<button class="btn utcBtn" onclick="calcFortress(${id},true)">UTCでコピー</button>
 </div>
 <div id="fortressResult${id}" class="result">ここに計算結果が出るワン</div>
 </div>`;
