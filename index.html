@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -532,8 +532,11 @@ addFortressRow(2);addFortressRow(2);
 // =====【追加：オフライン対応（Service Worker登録）】=====
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/wos-calc/service-worker.js");
+    navigator.serviceWorker.register("/wos-calc/service-worker.js?v=4");
   });
+
+
+
 }
 
 // =====【追加：疑似スプラッシュ画面を閉じる】=====
