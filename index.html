@@ -56,6 +56,15 @@ input{padding:10px;border-radius:10px;border:1px solid #ccc;box-sizing:border-bo
 .btn{padding:12px;border-radius:10px;color:#fff;border:none;font-weight:bold;text-align:center;}
 .utcBtn{background:#555!important;}
 .add{width:100%;margin-bottom:10px;}
+
+.result{
+background:#f1f1f4;
+padding:12px;
+border-radius:10px;
+white-space:pre-wrap;
+font-weight:normal;
+line-height:1.5;
+}
 .delete{color:red;border:none;border-radius:10px;padding:10px 16px;}
 
 .blue .btn{background:#007aff;}
@@ -323,7 +332,7 @@ ${timeUI("forty",id)}
 <button class="btn" onclick="calcForty(${id},false)">計算&コピー</button>
 <button class="btn utcBtn" onclick="calcForty(${id},true)">UTCでコピー</button>
 </div>
-<div id="fortyResult${id}" class="result">">ここに計算結果が表示されます</div>
+<div id="fortyResult${id}" class="result">ここに計算結果が表示されます</div>
 </div>`;
 }
 
@@ -429,7 +438,7 @@ return `
 <button class="btn" onclick="calcFortress(${id},false)">計算&コピー</button>
 <button class="btn utcBtn" onclick="calcFortress(${id},true)">UTCでコピー</button>
 </div>
-<div id="fortressResult${id}" class="result">">ここに計算結果が表示されます</div>
+<div id="fortressResult${id}" class="result">ここに計算結果が表示されます</div>
 </div>`;
 }
 
