@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -328,10 +328,27 @@ let base=h*3600+m*60+s0;
 members.forEach(x=>{x.time=base+(maxSec-x.sec);if(utc)x.time-=9*3600;while(x.time<0)x.time+=86400;});
 members.sort((a,b)=>a.time-b.time);
 
+let header = "5分集結";
+
 let text=members.map(x=>{
 let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
 return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
 }).join("\n");
+
+text = header + "\n" + text;
+
+let impact = base + maxSec;
+if(utc) impact -= 9*3600;
+while(impact < 0) impact += 86400;
+
+let ih = Math.floor(impact / 3600) % 24;
+let im = Math.floor((impact % 3600) / 60);
+let is = impact % 60;
+
+text += "\n\n着弾時間 → " +
+        `${pad(ih)}:${pad(im)}:${pad(is)}` +
+        (utc ? " UTC" : "");
+
 copyText(text,"normalResult"+tool);
 }
 
@@ -407,10 +424,26 @@ if(errors.length){showErrors(errors);return;}
 
 out.sort((a,b)=>a.time-b.time);
 
+let header = "5分集結";
+
 let text=out.map(x=>{
 let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
 return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
 }).join("\n");
+
+text = header + "\n" + text;
+
+let impact = h*3600 + m*60 + start + 40;
+if(utc) impact -= 9*3600;
+while(impact < 0) impact += 86400;
+
+let ih = Math.floor(impact / 3600) % 24;
+let im = Math.floor((impact % 3600) / 60);
+let is = impact % 60;
+
+text += "\n\n着弾時間 → " +
+        `${pad(ih)}:${pad(im)}:${pad(is)}` +
+        (utc ? " UTC" : "");
 
 copyText(text,"fortyResult"+tool);
 }
@@ -507,7 +540,19 @@ let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
 return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
 }).join("\n");
 
-text=header+"\n"+text;
+text = header + "\n" + text;
+
+let impact = base + maxSec;
+if(utc) impact -= 9*3600;
+while(impact < 0) impact += 86400;
+
+let ih = Math.floor(impact / 3600) % 24;
+let im = Math.floor((impact % 3600) / 60);
+let is = impact % 60;
+
+text += "\n\n着弾時間 → " +
+        `${pad(ih)}:${pad(im)}:${pad(is)}` +
+        (utc ? " UTC" : "");
 
 copyText(text,"fortressResult"+tool);
 }
