@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -340,7 +340,11 @@ let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
 return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
 }).join("\n");
 
+text = header + "\n" + text;
+
 let impact = base + 5*60 + maxSec;
+if(utc) impact -= 9*3600;
+while(impact < 0) impact += 86400;
 
 let ih = Math.floor(impact / 3600) % 24;
 let im = Math.floor((impact % 3600) / 60);
@@ -432,7 +436,11 @@ let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
 return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
 }).join("\n");
 
+text = header + "\n" + text;
+
 let impact = h*3600 + m*60 + start + 5*60 + 40;
+if(utc) impact -= 9*3600;
+while(impact < 0) impact += 86400;
 
 let ih = Math.floor(impact / 3600) % 24;
 let im = Math.floor((impact % 3600) / 60);
@@ -537,7 +545,11 @@ let hh=Math.floor(x.time/3600)%24,mm=Math.floor((x.time%3600)/60),ss=x.time%60;
 return `${x.name} → ${pad(hh)}:${pad(mm)}:${pad(ss)}${utc?" UTC":""}`;
 }).join("\n");
 
+text = header + "\n" + text;
+
 let impact = base + parseInt(rallyMin)*60 + maxSec;
+if(utc) impact -= 9*3600;
+while(impact < 0) impact += 86400;
 
 let ih = Math.floor(impact / 3600) % 24;
 let im = Math.floor((impact % 3600) / 60);
