@@ -4,7 +4,7 @@ const CACHE_NAME = "puty-cache-v5";
 
 const CACHE_FILES = [
   "/wos-calc/",
-  "/wos-calc/index.html",
+
   "/wos-calc/manifest.json",
   "/wos-calc/PutyKenMini.png"
 ];
